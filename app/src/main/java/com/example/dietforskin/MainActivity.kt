@@ -94,7 +94,10 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable(ScreensBottomBar.CreateAccount.route) {
-                                CreateAccount()
+                                CreateAccount(
+                                    mainViewModel = mainViewModel,
+                                    navController = navController
+                                )
                             }
                         }
                     }

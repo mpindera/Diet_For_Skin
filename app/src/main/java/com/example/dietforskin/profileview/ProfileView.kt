@@ -216,7 +216,7 @@ fun prev() {
         Scaffold(topBar = {
             TopBarView()
         }, modifier = Modifier.fillMaxSize(), bottomBar = {
-
+            BottomBarView(navController = navController, mainViewModel = MainViewModel())
         }) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -234,7 +234,6 @@ fun prev() {
                         .align(Alignment.Center)
                         .padding(start = 40.dp, end = 40.dp)
                 ) {
-
                     Column(modifier = Modifier.padding(15.dp)) {
 
                         CustomTextFieldLogin(

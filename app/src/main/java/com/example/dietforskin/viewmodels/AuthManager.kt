@@ -1,8 +1,7 @@
 package com.example.dietforskin.viewmodels
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
+import android.widget.Toast
 import androidx.navigation.NavHostController
 import com.example.dietforskin.bottombar.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
@@ -32,7 +31,6 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                     saveUserCredentials(email, password, role)
                 }
 
-
                 navController.navigate(ScreensBottomBar.Home.route)
 
                 db.collection("users")
@@ -43,21 +41,25 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                             val userData = document.data
                             val role = userData["Roles"].toString()
                             val userEmail = userData["Email"].toString()
+                            val username = userData["username"].toString()
 
                             if (userEmail == email) {
-                                check(role = role, mainViewModel = mainViewModel)
+                                check(
+                                    role = role,
+                                    username = username,
+                                    mainViewModel = mainViewModel,
+                                    context = context
+                                )
                             }
                         }
                     }
                     .addOnFailureListener {
 
                     }
-
-
             }
 
             is Resource.Error -> {
-                navController.navigate(ScreensBottomBar.Favorite.route)
+                navController.navigate(ScreensBottomBar.Profile.route)
 
             }
 
@@ -68,7 +70,8 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
     }
 
     private fun saveUserCredentials(email: String, password: String, role: PagesToRoles) {
-        val sharedPreferences = context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("email", email)
         editor.putString("password", password)
@@ -103,15 +106,13 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
 
 }
 
-fun check(role: String, mainViewModel: MainViewModel) {
+fun check(role: String, mainViewModel: MainViewModel, context: Context, username: String) {
     if (role == "Patient") {
-        Log.d("TEST1", "To Pacjent")
-        mainViewModel.updateSelection(PagesToRoles.USER_LOGGED)
-
+        Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
+        mainViewModel.updateSelection(PagesToRoles.PATIENT_LOGGED)
     }
     if (role == "Admin") {
-        Log.d("TEST1", "To Admin")
+        Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
         mainViewModel.updateSelection(PagesToRoles.ADMIN_LOGGED)
-
     }
 }

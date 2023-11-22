@@ -24,7 +24,7 @@ import com.example.dietforskin.viewmodels.MainViewModel
 fun BottomBarView(navController: NavHostController, mainViewModel: MainViewModel) {
 
     val adminLogged = mainViewModel.selection == PagesToRoles.ADMIN_LOGGED
-    val userLogged = mainViewModel.selection == PagesToRoles.USER_LOGGED
+    val userLogged = mainViewModel.selection == PagesToRoles.PATIENT_LOGGED
 
     NavigationBar {
         val items = if (userLogged) {

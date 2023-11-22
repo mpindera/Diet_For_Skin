@@ -1,5 +1,6 @@
 package com.example.dietforskin.profileview
 
+import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -34,21 +36,26 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.dietforskin.R
 import com.example.dietforskin.bottombar.BottomBarView
+import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
+import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.elements.CustomTextFieldLogin
 import com.example.dietforskin.topbar.TopBarView
 import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
+import com.example.dietforskin.viewmodels.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileView() {
+fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel) {
     var email by remember {
         mutableStateOf("")
     }
@@ -63,10 +70,12 @@ fun ProfileView() {
     } else {
         painterResource(id = R.drawable.baseline_visibility_off_24)
     }
+    val notLogged = mainViewModel.selection == PagesToRoles.NOT_LOGGED
 
-    val firebaseAuth = FirebaseAuth.getInstance()
-    val authRepository = AuthRepositoryImpl(firebaseAuth)
-    val authManager = AuthManager(authRepository)
+
+    val authRepository: AuthRepository = AuthRepositoryImpl()
+    val context = LocalContext.current
+    val authManager = AuthManager(authRepository, context)
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -101,8 +110,8 @@ fun ProfileView() {
                 Spacer(modifier = Modifier.padding(12.dp))
 
                 CustomTextFieldLogin(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = password.lowercase(),
+                    onValueChange = { password = it.lowercase() },
                     label = {
                         Text(text = ("PASSWORD"), letterSpacing = 1.sp)
                     },
@@ -129,7 +138,9 @@ fun ProfileView() {
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 20.dp),
                     onClick = {
-                        //TODO login
+                        coroutineScope.launch {
+                            authManager.login(email, password, navController, mainViewModel)
+                        }
                     },
                     shape = RoundedCornerShape(0.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -141,6 +152,29 @@ fun ProfileView() {
                     Text(text = "LOGIN IN", letterSpacing = 1.sp)
                 }
 
+                ElevatedButton(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 35.dp),
+                    onClick = {
+                        authRepository.logoutUser()
+                        mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
+                        val sharedPreferences =
+                            context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.clear()
+                        editor.apply()
+                    },
+                    shape = RoundedCornerShape(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorTextFieldsAndButton,
+                        contentColor = Color.Black
+                    ),
+                    enabled = !notLogged,
+                    elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
+                ) {
+                    Text(text = "SIGN OUT", letterSpacing = 1.sp)
+                }
             }
         }
     }
@@ -182,7 +216,7 @@ fun prev() {
         Scaffold(topBar = {
             TopBarView()
         }, modifier = Modifier.fillMaxSize(), bottomBar = {
-            BottomBarView(navController = navController)
+
         }) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -253,6 +287,23 @@ fun prev() {
                             elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
                         ) {
                             Text(text = "LOGIN IN", letterSpacing = 1.sp)
+                        }
+
+                        ElevatedButton(
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(top = 35.dp),
+                            onClick = {
+
+                            },
+                            shape = RoundedCornerShape(0.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorTextFieldsAndButton,
+                                contentColor = Color.Black
+                            ),
+                            elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
+                        ) {
+                            Text(text = "SIGN OUT", letterSpacing = 1.sp)
                         }
 
                     }

@@ -1,16 +1,10 @@
 package com.example.dietforskin.bottombar
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.animation.with
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -23,17 +17,36 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.dietforskin.data.profile.guest.Guest
+import com.example.dietforskin.data.auth.PagesToRoles
+import com.example.dietforskin.viewmodels.MainViewModel
 
 @Composable
-fun BottomBarView(navController: NavHostController) {
+fun BottomBarView(navController: NavHostController, mainViewModel: MainViewModel) {
+
+    val adminLogged = mainViewModel.selection == PagesToRoles.ADMIN_LOGGED
+    val userLogged = mainViewModel.selection == PagesToRoles.USER_LOGGED
+
     NavigationBar {
-        val items = listOf(
-            ScreensBottomBar.Home,
-            ScreensBottomBar.Favorite,
-            ScreensBottomBar.AddPost,
-            ScreensBottomBar.Profile
-        )
+        val items = if (userLogged) {
+            listOf(
+                ScreensBottomBar.Home,
+                ScreensBottomBar.Favorite,
+                ScreensBottomBar.Profile,
+            )
+        } else if (adminLogged) {
+            listOf(
+                ScreensBottomBar.Home,
+                ScreensBottomBar.Favorite,
+                ScreensBottomBar.AddPost,
+                ScreensBottomBar.Profile,
+                ScreensBottomBar.CreateAccount
+            )
+        }else {
+            listOf(
+                ScreensBottomBar.Home,
+                ScreensBottomBar.Profile,
+            )
+        }
 
         var selectedScreen by remember { mutableStateOf(items.first()) }
         items.forEach { screen ->
@@ -49,7 +62,8 @@ fun BottomBarView(navController: NavHostController) {
                 }
             }, label = { Text(screen.label) }, icon = {
 
-                val vector = if (selected) screen.icon else screen.outlinedIcon ?: screen.icon
+                val vector =
+                    if (selected) screen.filledIcon else screen.outlinedIcon ?: screen.filledIcon
 
                 AnimatedContent(targetState = vector, label = "vector", transitionSpec = {
                     fadeIn(animationSpec = tween(250)).togetherWith(

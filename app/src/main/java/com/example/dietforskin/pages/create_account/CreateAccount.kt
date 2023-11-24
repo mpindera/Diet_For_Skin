@@ -1,14 +1,17 @@
-package com.example.dietforskin.create_account
+package com.example.dietforskin.pages.create_account
 
 import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
@@ -55,8 +58,12 @@ import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccount(mainViewModel: MainViewModel, navController: NavHostController) {
+    var username by remember {
+        mutableStateOf("")
+    }
     var email by remember {
         mutableStateOf("")
     }
@@ -66,19 +73,15 @@ fun CreateAccount(mainViewModel: MainViewModel, navController: NavHostController
     var visibilityOfPassword by remember {
         mutableStateOf(true)
     }
+    var isFold by remember {
+        mutableStateOf(false)
+    }
+    var selectedRole by remember { mutableStateOf("") }
     val icon = if (visibilityOfPassword) {
         painterResource(id = R.drawable.baseline_visibility_24)
     } else {
         painterResource(id = R.drawable.baseline_visibility_off_24)
     }
-    val notLogged = mainViewModel.selection == PagesToRoles.NOT_LOGGED
-
-
-    val authRepository: AuthRepository = AuthRepositoryImpl()
-    val context = LocalContext.current
-    val authManager = AuthManager(authRepository, context)
-    val coroutineScope = rememberCoroutineScope()
-
 
     Box(
         modifier = Modifier
@@ -91,13 +94,38 @@ fun CreateAccount(mainViewModel: MainViewModel, navController: NavHostController
                 color = colorCircle, radius = 450.dp.toPx()
             )
         })
+
+        Box {
+            Canvas(modifier = Modifier.align(alignment = Alignment.TopStart), onDraw = {
+                drawCircle(
+                    color = colorPinkMain, radius = 140.dp.toPx()
+                )
+            })
+            Text(
+                text = "CREATE\nACCOUNT",
+                fontSize = 20.sp,
+                modifier = Modifier.padding(start = 11.dp, top = 26.dp),
+                letterSpacing = 1.sp,
+                textAlign = TextAlign.Start
+            )
+        }
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(start = 40.dp, end = 40.dp)
         ) {
-
             Column(modifier = Modifier.padding(15.dp)) {
+
+                CustomTextFieldLogin(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = {
+                        Text(text = ("USERNAME"), letterSpacing = 1.sp)
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                )
+
+                Spacer(modifier = Modifier.padding(12.dp))
 
                 CustomTextFieldLogin(
                     value = email,
@@ -110,74 +138,81 @@ fun CreateAccount(mainViewModel: MainViewModel, navController: NavHostController
 
                 Spacer(modifier = Modifier.padding(12.dp))
 
-                CustomTextFieldLogin(
-                    value = password.lowercase(),
-                    onValueChange = { password = it.lowercase() },
+                CustomTextFieldLogin(value = password,
+                    onValueChange = { password = it },
                     label = {
                         Text(text = ("PASSWORD"), letterSpacing = 1.sp)
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = if (visibilityOfPassword) {
-                        PasswordVisualTransformation()
-                    } else {
-                        VisualTransformation.None
-                    },
+
                     trailingIcon = {
-                        IconButton(
-                            onClick = { visibilityOfPassword = !visibilityOfPassword }
-                        ) {
+                        IconButton(onClick = {
+                            visibilityOfPassword = !visibilityOfPassword
+                        }) {
                             Icon(
-                                icon,
-                                contentDescription = "Show Icon"
+                                icon, contentDescription = "Show Icon"
                             )
                         }
+                    })
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    ElevatedButton(
+                        modifier = Modifier
+                            .padding(
+                                top = 20.dp
+                            ),
+                        onClick = {
+                            isFold = !isFold
+                        },
+                        shape = RoundedCornerShape(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorTextFieldsAndButton,
+                            contentColor = Color.Black
+                        ),
+                        elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
+                    ) {
+                        Text(text = "ROLE", letterSpacing = 1.sp)
                     }
-                )
-                ElevatedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 20.dp),
-                    onClick = {
-                        coroutineScope.launch {
-                            authManager.login(email, password, navController, mainViewModel)
-                        }
-                    },
-                    shape = RoundedCornerShape(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorTextFieldsAndButton,
-                        contentColor = Color.Black
-                    ),
-                    elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
-                ) {
-                    Text(text = "LOGIN IN", letterSpacing = 1.sp)
-                }
 
-                ElevatedButton(
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 35.dp),
-                    onClick = {
-                        authRepository.logoutUser()
-                        mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
-                        val sharedPreferences =
-                            context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-                        val editor = sharedPreferences.edit()
-                        editor.clear()
-                        editor.apply()
-                    },
-                    shape = RoundedCornerShape(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorTextFieldsAndButton,
-                        contentColor = Color.Black
-                    ),
-                    enabled = !notLogged,
-                    elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
-                ) {
-                    Text(text = "SIGN OUT", letterSpacing = 1.sp)
+                    if (isFold) {
+                        ShowDropMenu(isFold = isFold,
+                            onRoleSelected = { selectedRole = it; isFold = false })
+                    }
+
+                    ElevatedButton(
+                        modifier = Modifier
+                            .padding(top = 20.dp),
+                        onClick = {
+
+                        },
+                        shape = RoundedCornerShape(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorTextFieldsAndButton,
+                            contentColor = Color.Black
+                        ),
+                        elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
+                    ) {
+                        Text(text = "CREATE ACCOUNT", letterSpacing = 1.sp)
+                    }
+
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ShowDropMenu(isFold: Boolean, onRoleSelected: (String) -> Unit) {
+    DropdownMenu(
+        expanded = isFold, onDismissRequest = { }, modifier = Modifier
+            .width(200.dp)
+            .height(100.dp)
+    ) {
+        DropdownMenuItem(text = { Text("a") }, onClick = {
+            onRoleSelected("Admin")
+        })
+        DropdownMenuItem(text = { Text("a") }, onClick = {
+            onRoleSelected("Patient")
+        })
     }
 }
 
@@ -197,6 +232,7 @@ fun prev() {
     var visibilityOfPassword by remember {
         mutableStateOf(true)
     }
+    var selectedRole by remember { mutableStateOf("") }
     var isFold by remember {
         mutableStateOf(false)
     }
@@ -270,36 +306,28 @@ fun prev() {
 
                         Spacer(modifier = Modifier.padding(12.dp))
 
-                        CustomTextFieldLogin(
-                            value = password,
+                        CustomTextFieldLogin(value = password,
                             onValueChange = { password = it },
                             label = {
                                 Text(text = ("PASSWORD"), letterSpacing = 1.sp)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                            visualTransformation = if (visibilityOfPassword) {
-                                PasswordVisualTransformation()
-                            } else {
-                                VisualTransformation.None
-                            },
+
                             trailingIcon = {
-                                IconButton(
-                                    onClick = { visibilityOfPassword = !visibilityOfPassword }
-                                ) {
+                                IconButton(onClick = {
+                                    visibilityOfPassword = !visibilityOfPassword
+                                }) {
                                     Icon(
-                                        icon,
-                                        contentDescription = "Show Icon"
+                                        icon, contentDescription = "Show Icon"
                                     )
                                 }
-                            }
-                        )
-                        Box(modifier = Modifier.fillMaxWidth()) {
+                            })
+                        Row(modifier = Modifier.fillMaxWidth()) {
                             ElevatedButton(
                                 modifier = Modifier
                                     .padding(
-                                        top = 20.dp, start = 2.dp
-                                    )
-                                    .align(Alignment.BottomStart),
+                                        top = 20.dp, start = 2.dp, end = 4.dp
+                                    ),
                                 onClick = {
                                     isFold = !isFold
                                 },
@@ -313,10 +341,14 @@ fun prev() {
                                 Text(text = "ROLE", letterSpacing = 1.sp)
                             }
 
+                            if (isFold) {
+                                ShowDropMenu(isFold = isFold,
+                                    onRoleSelected = { selectedRole = it; isFold = false })
+                            }
+
                             ElevatedButton(
                                 modifier = Modifier
-                                    .padding(top = 20.dp, end = 2.dp)
-                                    .align(Alignment.BottomEnd),
+                                    .padding(top = 20.dp, end = 2.dp, start = 5.dp),
                                 onClick = {
 
                                 },
@@ -329,9 +361,7 @@ fun prev() {
                             ) {
                                 Text(text = "CREATE ACCOUNT", letterSpacing = 1.sp)
                             }
-                            if (isFold) {
-                                ShowDropMenu(isFold)
-                            }
+
                         }
                     }
                 }
@@ -340,11 +370,5 @@ fun prev() {
     }
 }
 
-@Composable
-fun ShowDropMenu(isFold: Boolean) {
-    DropdownMenu(expanded = isFold, onDismissRequest = { }) {
-        DropdownMenuItem(text = { Text("a") }, onClick = {
 
-        })
-    }
-}
+

@@ -1,4 +1,4 @@
-package com.example.dietforskin.profileview
+package com.example.dietforskin.pages.profileview
 
 data class PasswordValidationState(
     val hasMinimum: Boolean = false,

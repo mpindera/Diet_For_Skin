@@ -2,11 +2,13 @@ package com.example.dietforskin.viewmodels
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.material3.Snackbar
 import androidx.navigation.NavHostController
 import com.example.dietforskin.bottombar.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.auth.Resource
+import com.example.dietforskin.report.Reports
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.firestore
 class AuthManager(private val authRepository: AuthRepository, private val context: Context) {
     private val db = Firebase.firestore
     private val mAuth = FirebaseAuth.getInstance()
+    val currentUser = mAuth.currentUser
 
     suspend fun login(
         email: String,
@@ -39,8 +42,8 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                         for (document in documents) {
 
                             val userData = document.data
-                            val role = userData["Roles"].toString()
-                            val userEmail = userData["Email"].toString()
+                            val role = userData["roles"].toString()
+                            val userEmail = userData["email"].toString()
                             val username = userData["username"].toString()
 
                             if (userEmail == email) {
@@ -52,15 +55,15 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                                 )
                             }
                         }
+                        mainViewModel.updateSelectedScreen(ScreensBottomBar.Home)
                     }
                     .addOnFailureListener {
-
+                        Reports(context = context).errorFetchFromDatabase()
                     }
             }
 
             is Resource.Error -> {
                 navController.navigate(ScreensBottomBar.Profile.route)
-
             }
 
             is Resource.Loading -> {

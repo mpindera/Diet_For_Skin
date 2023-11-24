@@ -1,4 +1,4 @@
-package com.example.dietforskin.favoriteview
+package com.example.dietforskin.pages.favoriteview
 
 import android.content.Context
 import androidx.compose.material3.Button

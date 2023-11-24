@@ -1,4 +1,4 @@
-package com.example.dietforskin.addpostview
+package com.example.dietforskin.pages.addpostview
 
 import androidx.compose.runtime.Composable
 

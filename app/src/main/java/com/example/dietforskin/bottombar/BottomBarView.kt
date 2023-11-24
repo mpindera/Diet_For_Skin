@@ -47,47 +47,54 @@ fun BottomBarView(navController: NavHostController, mainViewModel: MainViewModel
                 ScreensBottomBar.Profile,
             )
         }
+        val selectedScreen by mainViewModel.selectedScreen
 
-        var selectedScreen by remember { mutableStateOf(items.first()) }
         items.forEach { screen ->
             val selected = selectedScreen == screen
-            NavigationBarItem(selected = selected, onClick = {
-                selectedScreen = screen
-                navController.navigate(screen.route) {
-                    popUpTo(navController.graph.findStartDestination().id) {
-                        saveState = true
+            NavigationBarItem(
+                selected = selected,
+                onClick = {
+                    mainViewModel.updateSelectedScreen(screen)
+                    navController.navigate(screen.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }, label = { Text(screen.label) }, icon = {
+                },
+                label = { Text(screen.label) },
+                icon = {
+                    val vector =
+                        if (selected) screen.filledIcon else screen.outlinedIcon ?: screen.filledIcon
 
-                val vector =
-                    if (selected) screen.filledIcon else screen.outlinedIcon ?: screen.filledIcon
-
-                AnimatedContent(targetState = vector, label = "vector", transitionSpec = {
-                    fadeIn(animationSpec = tween(250)).togetherWith(
-                        fadeOut(
-                            animationSpec = tween(
-                                250
+                    AnimatedContent(
+                        targetState = vector,
+                        label = "vector",
+                        transitionSpec = {
+                            fadeIn(animationSpec = tween(250)).togetherWith(
+                                fadeOut(
+                                    animationSpec = tween(
+                                        250
+                                    )
+                                )
                             )
-                        )
-                    )
-                }) {
-                    if (screen == ScreensBottomBar.Favorite) {
-                        Icon(
-                            imageVector = it,
-                            contentDescription = screen.label,
-                            tint = Color(0xFFE07575)
-                        )
-                    } else {
-                        Icon(
-                            imageVector = it, contentDescription = screen.label
-                        )
+                        }
+                    ) {
+                        if (screen == ScreensBottomBar.Favorite) {
+                            Icon(
+                                imageVector = it,
+                                contentDescription = screen.label,
+                                tint = Color(0xFFE07575)
+                            )
+                        } else {
+                            Icon(
+                                imageVector = it, contentDescription = screen.label
+                            )
+                        }
                     }
                 }
-
-            })
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.dietforskin.profileview
+package com.example.dietforskin.pages.profileview
 
 import android.content.Context
 import androidx.compose.foundation.Canvas
@@ -99,8 +99,8 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel) 
             Column(modifier = Modifier.padding(15.dp)) {
 
                 CustomTextFieldLogin(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = email.lowercase(),
+                    onValueChange = { email = it.lowercase() },
                     label = {
                         Text(text = ("EMAIL"), letterSpacing = 1.sp)
                     },
@@ -110,8 +110,8 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel) 
                 Spacer(modifier = Modifier.padding(12.dp))
 
                 CustomTextFieldLogin(
-                    value = password.lowercase(),
-                    onValueChange = { password = it.lowercase() },
+                    value = password,
+                    onValueChange = { password = it },
                     label = {
                         Text(text = ("PASSWORD"), letterSpacing = 1.sp)
                     },

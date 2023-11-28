@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         topBar = {
-                            TopBarView()
+                            TopBarView(mainViewModel)
                         },
                         modifier = Modifier.fillMaxSize(),
                         bottomBar = {

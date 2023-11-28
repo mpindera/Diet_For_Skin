@@ -8,18 +8,24 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.dietforskin.bottombar.ScreensBottomBar
 import com.example.dietforskin.data.auth.PagesToRoles
+import com.example.dietforskin.data.profile.PagesSite
 
 class MainViewModel : ViewModel() {
-    var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
-    fun updateSelection(newSelection: PagesToRoles) {
-        selection = newSelection
-    }
+  var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
+  var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
 
+  fun updateSelectionOfPagesSite(newSelectionSite: PagesSite) {
+    selectionOfPagesSite = newSelectionSite
+  }
 
-    private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
-    val selectedScreen: State<ScreensBottomBar> = _selectedScreen
+  fun updateSelection(newSelection: PagesToRoles) {
+    selection = newSelection
+  }
 
-    fun updateSelectedScreen(newScreen: ScreensBottomBar) {
-        _selectedScreen.value = newScreen
-    }
+  private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
+  val selectedScreen: State<ScreensBottomBar> = _selectedScreen
+
+  fun updateSelectedScreen(newScreen: ScreensBottomBar) {
+    _selectedScreen.value = newScreen
+  }
 }

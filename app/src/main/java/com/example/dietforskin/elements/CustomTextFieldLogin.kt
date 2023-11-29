@@ -14,7 +14,7 @@ import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTextFieldLogin(
+fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: @Composable() (() -> Unit),

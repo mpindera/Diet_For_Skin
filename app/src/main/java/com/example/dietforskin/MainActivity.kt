@@ -11,26 +11,34 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dietforskin.bars.topbar.TopBarView
 import com.example.dietforskin.pages.addpostview.AddPostView
-import com.example.dietforskin.bottombar.BottomBarView
-import com.example.dietforskin.bottombar.ScreensBottomBar
+import com.example.dietforskin.bars.bottombar.BottomBarView
+import com.example.dietforskin.bars.bottombar.ScreensBottomBar
+import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.pages.create_account.CreateAccount
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.pages.favoriteview.FavoritePostsView
-import com.example.dietforskin.pages.MainViewOfPosts
+import com.example.dietforskin.pages.mainview.MainViewOfPosts
 import com.example.dietforskin.pages.profileview.ProfileView
-import com.example.dietforskin.topbar.TopBarView
 import com.example.dietforskin.ui.theme.DietForSkinTheme
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.MainViewModel
+import io.reactivex.rxjava3.schedulers.Schedulers.single
 import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
+import org.koin.dsl.module
+
+
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
@@ -38,6 +46,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             val navController = rememberNavController()
             val context = LocalContext.current
@@ -90,12 +99,12 @@ class MainActivity : ComponentActivity() {
                             composable(ScreensBottomBar.Profile.route) {
                                 ProfileView(
                                     navController = navController,
-                                    mainViewModel = mainViewModel
+                                    mainViewModel = mainViewModel,
+                                    context = context
                                 )
                             }
                             composable(ScreensBottomBar.CreateAccount.route) {
                                 CreateAccount(
-                                    mainViewModel = mainViewModel,
                                     navController = navController
                                 )
                             }

@@ -1,4 +1,4 @@
-package com.example.dietforskin.topbar
+package com.example.dietforskin.bars.topbar
 
 
 import androidx.compose.foundation.layout.fillMaxWidth

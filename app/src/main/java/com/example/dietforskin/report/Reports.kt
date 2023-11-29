@@ -15,16 +15,19 @@ class Reports(val context: Context) {
     fun errorForSavingToDatabase() {
         Toast.makeText(context, "Błąd podczas zapisu do bazy danych.", Toast.LENGTH_SHORT).show()
     }
-    fun savedInDatabase() {
-        Toast.makeText(context, "Dane zostały zapisane.", Toast.LENGTH_SHORT).show()
-    }
     fun errorFillAllFields() {
         Toast.makeText(context, "Wypełnij wszystkie informacje.", Toast.LENGTH_SHORT).show()
     }
-    fun u() {
-        Toast.makeText(context, "s s s.", Toast.LENGTH_SHORT).show()
+    fun savedInDatabase() {
+        Toast.makeText(context, "Dane zostały zapisane.", Toast.LENGTH_SHORT).show()
     }
-    fun s() {
-        Toast.makeText(context, "a a a.", Toast.LENGTH_SHORT).show()
+    fun registerPerson() {
+        Toast.makeText(context, "Użytkownik został zarejestrowany.", Toast.LENGTH_SHORT).show()
+    }
+    fun errorRegisterPerson() {
+        Toast.makeText(context, "Wystąpił błąd podczas rejestracji użytkownika.", Toast.LENGTH_SHORT).show()
+    }
+    fun loggedSuccess(username: String) {
+        Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
     }
 }

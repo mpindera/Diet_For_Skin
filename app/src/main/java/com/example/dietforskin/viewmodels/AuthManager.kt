@@ -27,7 +27,6 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
     ) {
         when (authRepository.loginUser(email, password)) {
             is Resource.Success -> {
-
                 mAuth.currentUser?.let {
                     val role = getUserRoleFromSharedPreferences()
                     mainViewModel.updateSelection(role)
@@ -117,11 +116,11 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
     suspend fun register(email: String, password: String, navController: NavHostController) {
         when (authRepository.registerUser(email, password)) {
             is Resource.Success -> {
-                Reports(context).u()
+                Reports(context).registerPerson()
             }
 
             is Resource.Error -> {
-                Reports(context).s()
+                Reports(context).errorRegisterPerson()
             }
 
             is Resource.Loading -> {
@@ -136,11 +135,11 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
 
 fun check(role: String, mainViewModel: MainViewModel, context: Context, username: String) {
     if (role == "Patient") {
-        Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
+        Reports(context).loggedSuccess(username = username)
         mainViewModel.updateSelection(PagesToRoles.PATIENT_LOGGED)
     }
     if (role == "Admin") {
-        Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
+        Reports(context).loggedSuccess(username = username)
         mainViewModel.updateSelection(PagesToRoles.ADMIN_LOGGED)
     }
 }

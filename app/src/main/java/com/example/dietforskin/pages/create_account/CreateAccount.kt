@@ -1,5 +1,6 @@
 package com.example.dietforskin.pages.create_account
 
+import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
+import com.example.dietforskin.data.database.DatabaseRepositoryImpl
 import com.example.dietforskin.data.profile.person.Person
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
@@ -42,17 +44,17 @@ import com.example.dietforskin.report.Reports
 import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
-import com.example.dietforskin.viewmodels.MainViewModel
 import com.example.dietforskin.viewmodels.PagesViewModel
 import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import org.koin.ext.clearQuotes
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAccount(navController: NavHostController) {
-    val db = Firebase.firestore
+fun CreateAccount(navController: NavHostController, context: Context) {
+
 
     val pagesViewModel = remember { PagesViewModel() }
     val username by pagesViewModel.username.collectAsState()
@@ -64,8 +66,7 @@ fun CreateAccount(navController: NavHostController) {
         mutableStateOf(false)
     }
 
-    val authRepository: AuthRepository = AuthRepositoryImpl()
-    val context = LocalContext.current
+    val authRepository: AuthRepository = AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
     val authManager = AuthManager(authRepository, context)
     val coroutineScope = rememberCoroutineScope()
 
@@ -133,34 +134,34 @@ fun CreateAccount(navController: NavHostController) {
                             .align(Alignment.CenterEnd),
                         onClick = {
 
-                            pagesViewModel.onPasswordChanged(generateRandom())
+                            val generatedPassword = generateRandom()
+                            pagesViewModel.onPasswordChanged(generatedPassword)
 
                             val uuid = UUID.randomUUID().toString()
-                            if (username.isNotEmpty() &&
-                                password.isNotEmpty() &&
-                                email.isNotEmpty() &&
-                                role != "ROLE"
-                            ) {
+                            if (username.isNotEmpty() && email.isNotEmpty() && role != "ROLE") {
                                 coroutineScope.launch {
+                                    DatabaseRepositoryImpl(
+                                        database = Firebase,
+                                        context = context
+                                    ).addPersonToDatabase(
+                                        Person(
+                                            username = username,
+                                            email = email,
+                                            role = role,
+                                            uuid = uuid
+                                        )
+                                    )
+
                                     authManager.register(
                                         email = email,
-                                        password = password,
+                                        password = generatedPassword, // Use the generated password here
                                         navController = navController
                                     )
-                                }
-                                db.collection("users").add(
-                                    Person(
-                                        username = username,
-                                        email = email,
-                                        role = role,
-                                        uuid = uuid
-                                    )
-                                ).addOnSuccessListener {
-                                    Reports(context = context).savedInDatabase()
-                                }.addOnFailureListener {
-                                    Reports(context = context).errorForSavingToDatabase()
+
+                                    pagesViewModel.clearFields()
                                 }
                             } else {
+                                println("$uuid $username $generatedPassword $email $role")
                                 Reports(context = context).errorFillAllFields()
                             }
                         },

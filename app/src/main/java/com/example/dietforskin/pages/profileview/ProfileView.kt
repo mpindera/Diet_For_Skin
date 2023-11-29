@@ -46,6 +46,7 @@ import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.MainViewModel
 import com.example.dietforskin.viewmodels.PagesViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, context: Context) {
@@ -56,7 +57,7 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
     val email by pagesViewModel.email.collectAsState()
     val password by pagesViewModel.password.collectAsState()
 
-    val authRepository: AuthRepository = AuthRepositoryImpl()
+    val authRepository: AuthRepository = AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
     val authManager = AuthManager(authRepository, context)
     val coroutineScope = rememberCoroutineScope()
 

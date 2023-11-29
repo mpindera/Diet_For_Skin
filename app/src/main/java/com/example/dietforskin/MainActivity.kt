@@ -11,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
@@ -22,7 +21,6 @@ import com.example.dietforskin.bars.topbar.TopBarView
 import com.example.dietforskin.pages.addpostview.AddPostView
 import com.example.dietforskin.bars.bottombar.BottomBarView
 import com.example.dietforskin.bars.bottombar.ScreensBottomBar
-import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.pages.create_account.CreateAccount
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.auth.PagesToRoles
@@ -32,12 +30,8 @@ import com.example.dietforskin.pages.profileview.ProfileView
 import com.example.dietforskin.ui.theme.DietForSkinTheme
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.MainViewModel
-import io.reactivex.rxjava3.schedulers.Schedulers.single
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.GlobalContext.startKoin
-import org.koin.dsl.module
-
 
 
 class MainActivity : ComponentActivity() {
@@ -51,7 +45,8 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val context = LocalContext.current
             DietForSkinTheme {
-                val authRepository = AuthRepositoryImpl()
+                val authRepository =
+                    AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
                 val authManager = AuthManager(authRepository, this)
 
                 val sharedPreferences =
@@ -105,7 +100,8 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(ScreensBottomBar.CreateAccount.route) {
                                 CreateAccount(
-                                    navController = navController
+                                    navController = navController,
+                                    context = context
                                 )
                             }
                         }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -72,7 +73,7 @@ fun LoginForm(
                 containerColor = colorTextFieldsAndButton, contentColor = Color.Black
             ), elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
         ) {
-            Text(text = "LOGIN IN", letterSpacing = 1.sp)
+            Text(text = stringResource(id = R.string.login_in), letterSpacing = 1.sp)
         }
 
         ElevatedButton(
@@ -114,7 +115,7 @@ fun CustomTextFieldPassword(
         value = password,
         onValueChange = onValueChangePassword,
         label = {
-            Text(text = "PASSWORD", letterSpacing = 1.sp)
+            Text(text = stringResource(id = R.string.password), letterSpacing = 1.sp)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         visualTransformation = visualTransformation,

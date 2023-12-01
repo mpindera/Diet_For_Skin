@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -103,7 +104,7 @@ fun previewProfileView(){
                         CustomTextField(value = password,
                             onValueChange = { password = it },
                             label = {
-                                Text(text = ("PASSWORD"), letterSpacing = 1.sp)
+                                Text(text = stringResource(id = R.string.password), letterSpacing = 1.sp)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                             visualTransformation = if (visibilityOfPassword) {
@@ -135,7 +136,7 @@ fun previewProfileView(){
                             ),
                             elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
                         ) {
-                            Text(text = "LOGIN IN", letterSpacing = 1.sp)
+                            Text(text = stringResource(id = R.string.login_in), letterSpacing = 1.sp)
                         }
 
                         ElevatedButton(
@@ -159,7 +160,7 @@ fun previewProfileView(){
                                 .align(Alignment.Start)
                                 .clickable {
                                     //TODO
-                                }, text = "Forget password", fontStyle = FontStyle.Italic
+                                }, text = stringResource(id = R.string.reset_Password), fontStyle = FontStyle.Italic
                         )
                     }
                 }

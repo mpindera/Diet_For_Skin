@@ -30,10 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.dietforskin.R
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.database.DatabaseRepositoryImpl
@@ -59,7 +61,6 @@ fun CreateAccount(navController: NavHostController, context: Context) {
     val pagesViewModel = remember { PagesViewModel() }
     val username by pagesViewModel.username.collectAsState()
     val email by pagesViewModel.email.collectAsState()
-    val password by pagesViewModel.password.collectAsState()
     val role by pagesViewModel.selectedRole.collectAsState()
 
     var isFold by remember {
@@ -82,7 +83,7 @@ fun CreateAccount(navController: NavHostController, context: Context) {
             )
         })
 
-        CommonElements().canvasWithName("CREATE\nACCOUNT")
+        CommonElements().canvasWithName(stringResource(id = R.string.create_account))
 
         Box(
             modifier = Modifier
@@ -154,14 +155,13 @@ fun CreateAccount(navController: NavHostController, context: Context) {
 
                                     authManager.register(
                                         email = email,
-                                        password = generatedPassword, // Use the generated password here
+                                        password = generatedPassword,
                                         navController = navController
                                     )
 
                                     pagesViewModel.clearFields()
                                 }
                             } else {
-                                println("$uuid $username $generatedPassword $email $role")
                                 Reports(context = context).errorFillAllFields()
                             }
                         },
@@ -171,7 +171,7 @@ fun CreateAccount(navController: NavHostController, context: Context) {
                         ),
                         elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
                     ) {
-                        Text(text = "CREATE", letterSpacing = 1.sp)
+                        Text(text = stringResource(id = R.string.create), letterSpacing = 1.sp)
                     }
                 }
 

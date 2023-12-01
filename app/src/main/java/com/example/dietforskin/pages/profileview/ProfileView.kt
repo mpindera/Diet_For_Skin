@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -57,7 +58,8 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
     val email by pagesViewModel.email.collectAsState()
     val password by pagesViewModel.password.collectAsState()
 
-    val authRepository: AuthRepository = AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
+    val authRepository: AuthRepository =
+        AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
     val authManager = AuthManager(authRepository, context)
     val coroutineScope = rememberCoroutineScope()
 
@@ -85,7 +87,7 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
                 color = colorCircle, radius = 450.dp.toPx()
             )
         })
-        CommonElements().canvasWithName("PROFILE")
+        CommonElements().canvasWithName(stringResource(id = R.string.profile))
 
         Box(
             modifier = Modifier
@@ -113,7 +115,9 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
                                     .padding(top = 5.dp)
                                     .clickable {
                                         visibilityOfForgotPassword = false
-                                    }, text = "Cofnij do logowania", fontStyle = FontStyle.Italic
+                                    },
+                                text = stringResource(id = R.string.back_to_login),
+                                fontStyle = FontStyle.Italic
                             )
                         })
                 } else {
@@ -146,7 +150,9 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
                                     .padding(top = 5.dp)
                                     .clickable {
                                         visibilityOfForgotPassword = true
-                                    }, text = "Resetuj hasło", fontStyle = FontStyle.Italic
+                                    },
+                                text = stringResource(id = R.string.reset_Password),
+                                fontStyle = FontStyle.Italic
                             )
                         })
                 }

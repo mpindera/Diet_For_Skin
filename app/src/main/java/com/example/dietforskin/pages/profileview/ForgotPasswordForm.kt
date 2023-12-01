@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dietforskin.R
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
@@ -40,7 +42,7 @@ fun ForgotPasswordForm(
                 containerColor = colorTextFieldsAndButton, contentColor = Color.Black
             ), elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
         ) {
-            Text(text = "Resetuj hasło", letterSpacing = 1.sp)
+            Text(text = stringResource(id = R.string.reset_Password), letterSpacing = 1.sp)
         }
         backToLoginText.invoke()
     }

@@ -24,6 +24,7 @@ import com.example.dietforskin.bars.bottombar.ScreensBottomBar
 import com.example.dietforskin.pages.create_account.CreateAccount
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.auth.PagesToRoles
+import com.example.dietforskin.pages.chat.Chat
 import com.example.dietforskin.pages.favoriteview.FavoritePostsView
 import com.example.dietforskin.pages.mainview.MainViewOfPosts
 import com.example.dietforskin.pages.profileview.ProfileView
@@ -35,79 +36,85 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
-    private val mainViewModel by viewModels<MainViewModel>()
+  private val mainViewModel by viewModels<MainViewModel>()
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+  @OptIn(ExperimentalMaterial3Api::class)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
 
-        setContent {
-            val navController = rememberNavController()
-            val context = LocalContext.current
-            DietForSkinTheme {
-                val authRepository =
-                    AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
-                val authManager = AuthManager(authRepository, this)
+    setContent {
+      val navController = rememberNavController()
+      val context = LocalContext.current
+      DietForSkinTheme {
+        val authRepository =
+          AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
+        val authManager = AuthManager(authRepository, this)
 
-                val sharedPreferences =
-                    getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-                val savedEmail = sharedPreferences.getString("email", null)
-                val savedPassword = sharedPreferences.getString("password", null)
+        val sharedPreferences =
+          getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+        val savedEmail = sharedPreferences.getString("email", null)
+        val savedPassword = sharedPreferences.getString("password", null)
 
-                if (savedEmail != null && savedPassword != null) {
-                    lifecycleScope.launch {
-                        authManager.login(savedEmail, savedPassword, navController, mainViewModel)
-                    }
-                } else {
-                    mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
-                }
-
-                Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-                ) {
-                    Scaffold(
-                        topBar = {
-                            TopBarView(mainViewModel)
-                        },
-                        modifier = Modifier.fillMaxSize(),
-                        bottomBar = {
-                            BottomBarView(
-                                navController = navController,
-                                mainViewModel = mainViewModel
-                            )
-                        }
-                    ) { paddingValues ->
-                        NavHost(
-                            navController = navController,
-                            startDestination = ScreensBottomBar.Home.route,
-                            modifier = Modifier.padding(paddingValues = paddingValues)
-                        ) {
-                            composable(ScreensBottomBar.Home.route) {
-                                MainViewOfPosts()
-                            }
-                            composable(ScreensBottomBar.Favorite.route) {
-                                FavoritePostsView(mainViewModel = mainViewModel, context = context)
-                            }
-                            composable(ScreensBottomBar.AddPost.route) {
-                                AddPostView()
-                            }
-                            composable(ScreensBottomBar.Profile.route) {
-                                ProfileView(
-                                    navController = navController,
-                                    mainViewModel = mainViewModel,
-                                    context = context
-                                )
-                            }
-                            composable(ScreensBottomBar.CreateAccount.route) {
-                                CreateAccount(
-                                    navController = navController,
-                                    context = context
-                                )
-                            }
-                        }
-                    }
-                }
-            }
+        if (savedEmail != null && savedPassword != null) {
+          lifecycleScope.launch {
+            authManager.login(savedEmail, savedPassword, navController, mainViewModel)
+          }
+        } else {
+          mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
         }
+
+        Surface(
+          modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+        ) {
+          Scaffold(
+            topBar = {
+              TopBarView(mainViewModel)
+            },
+            modifier = Modifier.fillMaxSize(),
+            bottomBar = {
+              BottomBarView(
+                navController = navController,
+                mainViewModel = mainViewModel
+              )
+            }
+          ) { paddingValues ->
+            NavHost(
+              navController = navController,
+              startDestination = ScreensBottomBar.Home.route,
+              modifier = Modifier.padding(paddingValues = paddingValues)
+            ) {
+              composable(ScreensBottomBar.Home.route) {
+                MainViewOfPosts()
+              }
+              composable(ScreensBottomBar.Favorite.route) {
+                FavoritePostsView(mainViewModel = mainViewModel, context = context)
+              }
+              composable(ScreensBottomBar.AddPost.route) {
+                AddPostView()
+              }
+              composable(ScreensBottomBar.Profile.route) {
+                ProfileView(
+                  navController = navController,
+                  mainViewModel = mainViewModel,
+                  context = context
+                )
+              }
+              composable(ScreensBottomBar.CreateAccount.route) {
+                CreateAccount(
+                  navController = navController,
+                  context = context
+                )
+              }
+              composable(ScreensBottomBar.Chat.route) {
+                Chat(
+                  navController = navController,
+                  context = context
+                )
+              }
+            }
+          }
+        }
+      }
     }
+  }
 }

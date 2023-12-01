@@ -1,6 +1,5 @@
-package com.example.dietforskin.pages.profileview
+package com.example.dietforskin.pages.profile_view
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.dietforskin.R
-import com.example.dietforskin.data.auth.AuthRepository
-import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
@@ -32,10 +30,10 @@ import com.example.dietforskin.viewmodels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginForm(
     email: String,
-    authRepository: AuthRepository,
     password: String,
     visualTransformation: VisualTransformation,
     coroutineScope: CoroutineScope,
@@ -46,11 +44,12 @@ fun LoginForm(
     onValueChangePassword: (String) -> Unit,
     trailingIcon: @Composable () -> Unit,
     forgetText: @Composable () -> Unit,
-    context: Context,
-    notLogged: Boolean,
 ) {
     Column(modifier = Modifier.padding(15.dp)) {
-        CommonElements().CustomTextFieldEmail(email = email, onValueChangeEmail = onValueChangeEmail)
+        CommonElements().CustomTextFieldEmail(
+            email = email.lowercase(),
+            onValueChangeEmail = onValueChangeEmail
+        )
 
         Spacer(modifier = Modifier.padding(12.dp))
 
@@ -76,24 +75,6 @@ fun LoginForm(
             Text(text = stringResource(id = R.string.login_in), letterSpacing = 1.sp)
         }
 
-        ElevatedButton(
-            modifier = Modifier
-                .align(Alignment.End)
-                .padding(top = 35.dp), onClick = {
-                authRepository.logoutUser()
-                mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
-                val sharedPreferences =
-                    context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.clear()
-                editor.apply()
-            }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(
-                containerColor = colorTextFieldsAndButton, contentColor = Color.Black
-            ), enabled = !notLogged, elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
-        ) {
-            Text(text = "SIGN OUT", letterSpacing = 1.sp)
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -101,6 +82,7 @@ fun LoginForm(
         ) {
             forgetText.invoke()
         }
+
     }
 }
 

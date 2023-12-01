@@ -9,4 +9,8 @@
     <string name="create_account">CREATE ACCOUNT</string>
     <string name="username">USERNAME</string>
     <string name="email">EMAIL</string>
+    <string name="log_out">LOGOUT</string>
+    <string name="log_out_text">Are you sure you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 </resources>

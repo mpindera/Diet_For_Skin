@@ -1,12 +1,8 @@
-package com.example.dietforskin.pages.favoriteview
+package com.example.dietforskin.pages.favorite_view
 
 import android.content.Context
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.example.dietforskin.data.auth.AuthRepository
-import com.example.dietforskin.data.auth.AuthRepositoryImpl
-import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.viewmodels.MainViewModel
 
 @Composable

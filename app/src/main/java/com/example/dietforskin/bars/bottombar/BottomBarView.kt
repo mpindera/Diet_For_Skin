@@ -14,16 +14,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.dietforskin.data.auth.PagesToRoles
+import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.viewmodels.MainViewModel
 
 @Composable
 fun BottomBarView(navController: NavHostController, mainViewModel: MainViewModel) {
-
-
-  NavigationBar {
     val selectedScreen by mainViewModel.selectedScreen
 
+  NavigationBar {
     mainViewModel.selectedBottomBar().forEach { screen ->
       val selected = selectedScreen == screen
       NavigationBarItem(

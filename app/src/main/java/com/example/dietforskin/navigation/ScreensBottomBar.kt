@@ -1,4 +1,4 @@
-package com.example.dietforskin.bars.bottombar
+package com.example.dietforskin.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox

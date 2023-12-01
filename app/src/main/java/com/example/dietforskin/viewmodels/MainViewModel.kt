@@ -1,66 +1,91 @@
 package com.example.dietforskin.viewmodels
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.dietforskin.bars.bottombar.ScreensBottomBar
+import com.example.dietforskin.navigation.ScreensBottomBar
+import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.profile.PagesSite
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel : ViewModel() {
-  var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
-  var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
 
-  private val adminLogged = selection == PagesToRoles.ADMIN_LOGGED
-  private val userLogged = selection == PagesToRoles.PATIENT_LOGGED
+    var context: Context? by mutableStateOf(null)
 
-  val patientBottomBar = listOf(
-    ScreensBottomBar.Home,
-    ScreensBottomBar.Favorite,
-    ScreensBottomBar.Chat,
-    ScreensBottomBar.Profile,
-  )
-  val adminBottomBar = listOf(
-    ScreensBottomBar.Home,
-    ScreensBottomBar.Favorite,
-    ScreensBottomBar.Chat,
-    ScreensBottomBar.AddPost,
-    ScreensBottomBar.Profile,
-    ScreensBottomBar.CreateAccount
-  )
-  val guestBottomBar = listOf(
-    ScreensBottomBar.Home,
-    ScreensBottomBar.Profile,
-  )
+    var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
+        private set
 
-  fun selectedBottomBar(): List<ScreensBottomBar> {
-    return if (userLogged) {
-      patientBottomBar
-    } else if (adminLogged) {
-      adminBottomBar
-    } else {
-      guestBottomBar
+    private var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
+
+    val isAdminLogged: Boolean
+        get() = selection == PagesToRoles.ADMIN_LOGGED
+
+    var showDialog by mutableStateOf(false)
+
+    val isPatientLogged: Boolean
+        get() = selection == PagesToRoles.PATIENT_LOGGED
+
+    private val patientBottomBar = listOf(
+        ScreensBottomBar.Home,
+        ScreensBottomBar.Favorite,
+        ScreensBottomBar.Chat
+    )
+    private val adminBottomBar = listOf(
+        ScreensBottomBar.Home,
+        ScreensBottomBar.Favorite,
+        ScreensBottomBar.AddPost,
+        ScreensBottomBar.Chat,
+        ScreensBottomBar.CreateAccount
+    )
+    private val guestBottomBar = listOf(
+        ScreensBottomBar.Home,
+        ScreensBottomBar.Profile,
+    )
+
+    var showBar by mutableStateOf(false)
+        private set
+
+
+    fun onShowBarChanged(showBar: Boolean) {
+        this.showBar = showBar
     }
-  }
 
-  private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
-  val selectedScreen: State<ScreensBottomBar> = _selectedScreen
+    fun selectedBottomBar(): List<ScreensBottomBar> {
+        return if (isPatientLogged) {
+            patientBottomBar
+        } else if (isAdminLogged) {
+            adminBottomBar
+        } else {
+            guestBottomBar
+        }
+    }
 
-  fun updateSelectionOfPagesSite(newSelectionSite: PagesSite) {
-    selectionOfPagesSite = newSelectionSite
-  }
+    private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
+    val selectedScreen: State<ScreensBottomBar> = _selectedScreen
 
-  fun updateSelection(newSelection: PagesToRoles) {
-    selection = newSelection
-  }
+    fun updateSelectionOfPagesSite(newSelectionSite: PagesSite) {
+        selectionOfPagesSite = newSelectionSite
+    }
 
-  fun updateSelectedScreen(newScreen: ScreensBottomBar) {
-    _selectedScreen.value = newScreen
-  }
+    fun updateSelection(newSelection: PagesToRoles) {
+        selection = newSelection
+    }
 
+    fun updateSelectedScreen(newScreen: ScreensBottomBar) {
+        _selectedScreen.value = newScreen
+    }
+    fun logout(mainViewModel: MainViewModel, authRepository: AuthRepository, context: Context) {
+        mainViewModel.showDialog = false
+        authRepository.logoutUser()
+        mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
+        val sharedPreferences = context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
+    }
 }

@@ -1,4 +1,4 @@
-package com.example.dietforskin.pages.profileview
+package com.example.dietforskin.pages.profile_view
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border

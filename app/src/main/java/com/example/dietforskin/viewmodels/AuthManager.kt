@@ -3,7 +3,7 @@ package com.example.dietforskin.viewmodels
 import android.content.Context
 import android.widget.Toast
 import androidx.navigation.NavHostController
-import com.example.dietforskin.bars.bottombar.ScreensBottomBar
+import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.auth.Resource
@@ -33,7 +33,7 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                     saveUserCredentials(email, password, role)
                 }
 
-                navController.navigate(ScreensBottomBar.Home.route)
+
 
                 db.collection("users")
                     .get()
@@ -54,6 +54,7 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                             }
                         }
                         mainViewModel.updateSelectedScreen(ScreensBottomBar.Home)
+                        navController.navigate(ScreensBottomBar.Home.route)
                     }
                     .addOnFailureListener {
                         Reports(context = context).errorFetchFromDatabase()

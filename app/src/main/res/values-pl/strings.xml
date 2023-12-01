@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Diet for skin</string>
+    <string name="create">STWÓRZ</string>
+    <string name="reset_Password">Resetuj hasło</string>
+    <string name="login_in">ZALOGUJ</string>
+    <string name="password">HASŁO</string>
+    <string name="profile">PROFIL</string>
+    <string name="back_to_login">Wróć do logowania</string>
+    <string name="create_account">STWÓRZ KONTO</string>
+    <string name="username">NAZWA</string>
+    <string name="email">EMAIL</string>
+</resources>

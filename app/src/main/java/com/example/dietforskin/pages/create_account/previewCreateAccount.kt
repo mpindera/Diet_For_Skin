@@ -24,11 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
+import com.example.dietforskin.R
 import com.example.dietforskin.bars.bottombar.BottomBarView
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
@@ -73,7 +75,7 @@ fun previewCreateAccount() {
                     )
                 })
 
-                CommonElements().canvasWithName("CREATE\nACCOUNT")
+                CommonElements().canvasWithName(stringResource(id = R.string.create_account))
 
                 Box(
                     modifier = Modifier
@@ -86,7 +88,7 @@ fun previewCreateAccount() {
                             value = username,
                             onValueChange = { username = it },
                             label = {
-                                Text(text = ("USERNAME"), letterSpacing = 1.sp)
+                                Text(text = stringResource(id = R.string.username), letterSpacing = 1.sp)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         )
@@ -143,7 +145,7 @@ fun previewCreateAccount() {
                                 ),
                                 elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
                             ) {
-                                Text(text = "CREATE", letterSpacing = 1.sp)
+                                Text(text = stringResource(id = R.string.create), letterSpacing = 1.sp)
                             }
                         }
 

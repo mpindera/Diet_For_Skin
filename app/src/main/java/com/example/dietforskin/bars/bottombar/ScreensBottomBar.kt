@@ -3,11 +3,13 @@ package com.example.dietforskin.bars.bottombar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
@@ -52,5 +54,12 @@ sealed class ScreensBottomBar(
         label = "Create",
         filledIcon = Icons.Filled.AccountBox,
         outlinedIcon = Icons.Outlined.AccountBox
+    )
+
+    object Chat : ScreensBottomBar(
+        route = "chat",
+        label= "Chat",
+        filledIcon = Icons.Filled.Create,
+        outlinedIcon = Icons.Outlined.Create
     )
 }

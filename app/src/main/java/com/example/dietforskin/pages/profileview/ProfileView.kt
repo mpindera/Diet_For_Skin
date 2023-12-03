@@ -49,115 +49,120 @@ import com.example.dietforskin.viewmodels.MainViewModel
 import com.example.dietforskin.viewmodels.PagesViewModel
 import com.google.firebase.auth.FirebaseAuth
 
+/** Profile is a activity where everyone has to write mail, password to join into panel.
+Everyone who forgot password can click into "Forgot Password". After that you have to enter your
+email. Then, open email to change password. Every new Patient have to click and change password.
+
+ **/
 @Composable
 fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, context: Context) {
-    mainViewModel.updateSelectionOfPagesSite(PagesSite.PROFILE_VIEW)
-    val notLogged = mainViewModel.selection == PagesToRoles.NOT_LOGGED
+  mainViewModel.updateSelectionOfPagesSite(PagesSite.PROFILE_VIEW)
+  val notLogged = mainViewModel.selection == PagesToRoles.NOT_LOGGED
 
-    val pagesViewModel = remember { PagesViewModel() }
-    val email by pagesViewModel.email.collectAsState()
-    val password by pagesViewModel.password.collectAsState()
+  val pagesViewModel = remember { PagesViewModel() }
+  val email by pagesViewModel.email.collectAsState()
+  val password by pagesViewModel.password.collectAsState()
 
-    val authRepository: AuthRepository =
-        AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
-    val authManager = AuthManager(authRepository, context)
-    val coroutineScope = rememberCoroutineScope()
+  val authRepository: AuthRepository =
+    AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
+  val authManager = AuthManager(authRepository, context)
+  val coroutineScope = rememberCoroutineScope()
 
-    var visibilityOfPassword by remember {
-        mutableStateOf(true)
-    }
-    var visibilityOfForgotPassword by remember {
-        mutableStateOf(false)
-    }
+  var visibilityOfPassword by remember {
+    mutableStateOf(true)
+  }
+  var visibilityOfForgotPassword by remember {
+    mutableStateOf(false)
+  }
 
-    val icon = if (visibilityOfPassword) {
-        painterResource(id = R.drawable.baseline_visibility_24)
-    } else {
-        painterResource(id = R.drawable.baseline_visibility_off_24)
-    }
+  val icon = if (visibilityOfPassword) {
+    painterResource(id = R.drawable.baseline_visibility_24)
+  } else {
+    painterResource(id = R.drawable.baseline_visibility_off_24)
+  }
+
+  Box(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding()
+  ) {
+    Spacer(modifier = Modifier.border(1.dp, Color.Black))
+    Canvas(modifier = Modifier.align(alignment = Alignment.TopEnd), onDraw = {
+      drawCircle(
+        color = colorCircle, radius = 450.dp.toPx()
+      )
+    })
+    CommonElements().canvasWithName(stringResource(id = R.string.profile))
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding()
+      modifier = Modifier
+        .align(Alignment.Center)
+        .padding(start = 40.dp, end = 40.dp)
     ) {
-        Spacer(modifier = Modifier.border(1.dp, Color.Black))
-        Canvas(modifier = Modifier.align(alignment = Alignment.TopEnd), onDraw = {
-            drawCircle(
-                color = colorCircle, radius = 450.dp.toPx()
+      AnimatedContent(targetState = visibilityOfForgotPassword,
+        label = "vector",
+        transitionSpec = {
+          fadeIn(animationSpec = tween(250)).togetherWith(
+            fadeOut(
+              animationSpec = tween(
+                250
+              )
             )
-        })
-        CommonElements().canvasWithName(stringResource(id = R.string.profile))
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(start = 40.dp, end = 40.dp)
-        ) {
-            AnimatedContent(targetState = visibilityOfForgotPassword,
-                label = "vector",
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(250)).togetherWith(
-                        fadeOut(
-                            animationSpec = tween(
-                                250
-                            )
-                        )
-                    )
-                }) { targetState ->
-                if (targetState) {
-                    ForgotPasswordForm(email = email,
-                        authManager = authManager,
-                        onValueChangeEmail = pagesViewModel::onEmailChanged,
-                        backToLoginText = {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .clickable {
-                                        visibilityOfForgotPassword = false
-                                    },
-                                text = stringResource(id = R.string.back_to_login),
-                                fontStyle = FontStyle.Italic
-                            )
-                        })
-                } else {
-                    LoginForm(email = email,
-                        authRepository = authRepository,
-                        password = password,
-                        visualTransformation = if (visibilityOfPassword) {
-                            PasswordVisualTransformation()
-                        } else {
-                            VisualTransformation.None
-                        },
-                        coroutineScope = coroutineScope,
-                        context = context,
-                        authManager = authManager,
-                        navController = navController,
-                        mainViewModel = mainViewModel,
-                        notLogged = notLogged,
-                        onValueChangeEmail = pagesViewModel::onEmailChanged,
-                        onValueChangePassword = pagesViewModel::onPasswordChanged,
-                        trailingIcon = {
-                            IconButton(onClick = { visibilityOfPassword = !visibilityOfPassword }) {
-                                Icon(
-                                    icon, contentDescription = "Show Icon"
-                                )
-                            }
-                        },
-                        forgetText = {
-                            Text(
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .clickable {
-                                        visibilityOfForgotPassword = true
-                                    },
-                                text = stringResource(id = R.string.reset_Password),
-                                fontStyle = FontStyle.Italic
-                            )
-                        })
-                }
-            }
+          )
+        }) { targetState ->
+        if (targetState) {
+          ForgotPasswordForm(email = email,
+            authManager = authManager,
+            onValueChangeEmail = pagesViewModel::onEmailChanged,
+            backToLoginText = {
+              Text(
+                modifier = Modifier
+                  .padding(top = 5.dp)
+                  .clickable {
+                    visibilityOfForgotPassword = false
+                  },
+                text = stringResource(id = R.string.back_to_login),
+                fontStyle = FontStyle.Italic
+              )
+            })
+        } else {
+          LoginForm(email = email,
+            authRepository = authRepository,
+            password = password,
+            visualTransformation = if (visibilityOfPassword) {
+              PasswordVisualTransformation()
+            } else {
+              VisualTransformation.None
+            },
+            coroutineScope = coroutineScope,
+            context = context,
+            authManager = authManager,
+            navController = navController,
+            mainViewModel = mainViewModel,
+            notLogged = notLogged,
+            onValueChangeEmail = pagesViewModel::onEmailChanged,
+            onValueChangePassword = pagesViewModel::onPasswordChanged,
+            trailingIcon = {
+              IconButton(onClick = { visibilityOfPassword = !visibilityOfPassword }) {
+                Icon(
+                  icon, contentDescription = "Show Icon"
+                )
+              }
+            },
+            forgetText = {
+              Text(
+                modifier = Modifier
+                  .padding(top = 5.dp)
+                  .clickable {
+                    visibilityOfForgotPassword = true
+                  },
+                text = stringResource(id = R.string.reset_Password),
+                fontStyle = FontStyle.Italic
+              )
+            })
         }
+      }
     }
+  }
 }
 

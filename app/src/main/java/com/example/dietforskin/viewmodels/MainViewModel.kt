@@ -13,22 +13,54 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel : ViewModel() {
-    var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
-    var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
+  var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
+  var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
 
-    private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
-    val selectedScreen: State<ScreensBottomBar> = _selectedScreen
+  private val adminLogged = selection == PagesToRoles.ADMIN_LOGGED
+  private val userLogged = selection == PagesToRoles.PATIENT_LOGGED
 
-    fun updateSelectionOfPagesSite(newSelectionSite: PagesSite) {
-        selectionOfPagesSite = newSelectionSite
+  val patientBottomBar = listOf(
+    ScreensBottomBar.Home,
+    ScreensBottomBar.Favorite,
+    ScreensBottomBar.Chat,
+    ScreensBottomBar.Profile,
+  )
+  val adminBottomBar = listOf(
+    ScreensBottomBar.Home,
+    ScreensBottomBar.Favorite,
+    ScreensBottomBar.Chat,
+    ScreensBottomBar.AddPost,
+    ScreensBottomBar.Profile,
+    ScreensBottomBar.CreateAccount
+  )
+  val guestBottomBar = listOf(
+    ScreensBottomBar.Home,
+    ScreensBottomBar.Profile,
+  )
+
+  fun selectedBottomBar(): List<ScreensBottomBar> {
+    return if (userLogged) {
+      patientBottomBar
+    } else if (adminLogged) {
+      adminBottomBar
+    } else {
+      guestBottomBar
     }
+  }
 
-    fun updateSelection(newSelection: PagesToRoles) {
-        selection = newSelection
-    }
+  private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
+  val selectedScreen: State<ScreensBottomBar> = _selectedScreen
 
-    fun updateSelectedScreen(newScreen: ScreensBottomBar) {
-        _selectedScreen.value = newScreen
-    }
+  fun updateSelectionOfPagesSite(newSelectionSite: PagesSite) {
+    selectionOfPagesSite = newSelectionSite
+  }
+
+  fun updateSelection(newSelection: PagesToRoles) {
+    selection = newSelection
+  }
+
+  fun updateSelectedScreen(newScreen: ScreensBottomBar) {
+    _selectedScreen.value = newScreen
+  }
 
 }

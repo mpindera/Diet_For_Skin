@@ -50,13 +50,13 @@ import com.example.dietforskin.viewmodels.PagesViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
-import org.koin.ext.clearQuotes
 import java.util.UUID
 
-@OptIn(ExperimentalMaterial3Api::class)
+/** CreateAccount is a class where admin can add profile and role to them.
+ Admin has to write username, email, role, but password is generated automatically.
+ **/
 @Composable
 fun CreateAccount(navController: NavHostController, context: Context) {
-
 
     val pagesViewModel = remember { PagesViewModel() }
     val username by pagesViewModel.username.collectAsState()
@@ -152,7 +152,6 @@ fun CreateAccount(navController: NavHostController, context: Context) {
                                             uuid = uuid
                                         )
                                     )
-
                                     authManager.register(
                                         email = email,
                                         password = generatedPassword,
@@ -174,7 +173,6 @@ fun CreateAccount(navController: NavHostController, context: Context) {
                         Text(text = stringResource(id = R.string.create), letterSpacing = 1.sp)
                     }
                 }
-
             }
         }
     }

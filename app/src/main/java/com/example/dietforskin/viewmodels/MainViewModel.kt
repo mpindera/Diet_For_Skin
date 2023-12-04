@@ -6,12 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
 import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.profile.PagesSite
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.example.dietforskin.navigation.Screen
 
 class MainViewModel : ViewModel() {
 
@@ -31,9 +31,7 @@ class MainViewModel : ViewModel() {
         get() = selection == PagesToRoles.PATIENT_LOGGED
 
     private val patientBottomBar = listOf(
-        ScreensBottomBar.Home,
-        ScreensBottomBar.Favorite,
-        ScreensBottomBar.Chat
+        ScreensBottomBar.Home, ScreensBottomBar.Favorite, ScreensBottomBar.Chat
     )
     private val adminBottomBar = listOf(
         ScreensBottomBar.Home,
@@ -79,13 +77,24 @@ class MainViewModel : ViewModel() {
     fun updateSelectedScreen(newScreen: ScreensBottomBar) {
         _selectedScreen.value = newScreen
     }
-    fun logout(mainViewModel: MainViewModel, authRepository: AuthRepository, context: Context) {
+
+    fun logout(
+        mainViewModel: MainViewModel,
+        authRepository: AuthRepository,
+        context: Context,
+        navController: NavHostController
+    ) {
         mainViewModel.showDialog = false
+        navController.navigate(Screen.Splash.route) {
+            popUpTo(Screen.Splash.route) { inclusive = true }
+        }
         authRepository.logoutUser()
         mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
-        val sharedPreferences = context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.clear()
         editor.apply()
+
     }
 }

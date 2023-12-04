@@ -7,6 +7,7 @@ import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.auth.Resource
+import com.example.dietforskin.navigation.Screen
 import com.example.dietforskin.report.Reports
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -32,40 +33,33 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                     mainViewModel.updateSelection(role)
                     saveUserCredentials(email, password, role)
                 }
+                db.collection("users").get().addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val userData = document.data
+                        val role = userData["role"].toString()
+                        val userEmail = userData["email"].toString()
+                        val username = userData["username"].toString()
 
-
-
-                db.collection("users")
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        for (document in documents) {
-                            val userData = document.data
-                            val role = userData["role"].toString()
-                            val userEmail = userData["email"].toString()
-                            val username = userData["username"].toString()
-
-                            if (userEmail == email) {
-                                check(
-                                    role = role,
-                                    username = username,
-                                    mainViewModel = mainViewModel,
-                                    context = context
-                                )
-                            }
+                        if (userEmail == email) {
+                            check(
+                                role = role,
+                                username = username,
+                                mainViewModel = mainViewModel,
+                                context = context
+                            )
                         }
-                        mainViewModel.updateSelectedScreen(ScreensBottomBar.Home)
-                        navController.navigate(ScreensBottomBar.Home.route)
                     }
-                    .addOnFailureListener {
-                        Reports(context = context).errorFetchFromDatabase()
+                    mainViewModel.updateSelectedScreen(ScreensBottomBar.Home)
+                    navController.navigate(Screen.Splash.route) {
+                        popUpTo(Screen.Splash.route) { inclusive = true }
                     }
+                }.addOnFailureListener {
+                    Reports(context = context).errorFetchFromDatabase()
+                }
             }
 
             is Resource.Error -> {
                 navController.navigate(ScreensBottomBar.Profile.route)
-            }
-
-            is Resource.Loading -> {
 
             }
         }
@@ -123,12 +117,6 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
             is Resource.Error -> {
                 Reports(context).errorRegisterPerson()
             }
-
-            is Resource.Loading -> {
-
-            }
-
-
         }
     }
 

@@ -68,7 +68,7 @@ fun previewProfileView(){
         modifier = Modifier.fillMaxSize(), color = colorPinkMain
     ) {
         Scaffold(topBar = {
-            TopBarView(MainViewModel())
+            TopBarView(MainViewModel(), navController)
         }, modifier = Modifier.fillMaxSize(), bottomBar = {
             BottomBarView(navController = navController, mainViewModel = MainViewModel())
         }) { paddingValues ->

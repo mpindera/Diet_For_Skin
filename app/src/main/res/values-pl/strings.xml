@@ -14,4 +14,11 @@
     <string name="log_out_text">Czy na pewno chcesz się wylogować?</string>
     <string name="yes">Tak</string>
     <string name="cancel">Anuluj</string>
+    <string name="error_fetching_data">Błąd podczas pobierani danych</string>
+    <string name="email_not_exists">Taki email nie istnieje</string>
+    <string name="error_for_saving_to_database">Błąd podczas zapisu do bazy danych</string>
+    <string name="error_fill_all_fields">Wypełnij wszystkie pola</string>
+    <string name="saved_in_database">Zapisano do bazy danych</string>
+    <string name="registe_person">Osoba została zarejestrowana</string>
+    <string name="error_register_person">Błąd podczas rejestracji</string>
 </resources>

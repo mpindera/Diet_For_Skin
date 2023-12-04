@@ -53,7 +53,6 @@ email. Then, open email to change password. Every new Patient have to click and 
 @Composable
 fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, context: Context) {
     mainViewModel.updateSelectionOfPagesSite(PagesSite.PROFILE_VIEW)
-    val notLogged = mainViewModel.selection == PagesToRoles.NOT_LOGGED
 
     val pagesViewModel = remember { PagesViewModel() }
     val email by pagesViewModel.email.collectAsState()

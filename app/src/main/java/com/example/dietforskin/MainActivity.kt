@@ -18,16 +18,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.dietforskin.bars.topbar.TopBarView
-import com.example.dietforskin.pages.addpostview.AddPostView
+import com.example.dietforskin.pages.addpost_view.AddPostView
 import com.example.dietforskin.bars.bottombar.BottomBarView
-import com.example.dietforskin.bars.bottombar.ScreensBottomBar
+import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.pages.create_account.CreateAccount
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.auth.PagesToRoles
-import com.example.dietforskin.pages.chat.Chat
-import com.example.dietforskin.pages.favoriteview.FavoritePostsView
-import com.example.dietforskin.pages.mainview.MainViewOfPosts
-import com.example.dietforskin.pages.profileview.ProfileView
+import com.example.dietforskin.navigation.Screen
+import com.example.dietforskin.pages.chat_view.Chat
+import com.example.dietforskin.pages.favorite_view.FavoritePostsView
+import com.example.dietforskin.pages.main_view.MainViewOfPosts
+import com.example.dietforskin.pages.profile_view.ProfileView
+import com.example.dietforskin.pages.splash_screen.AnimatedSplashScreen
 import com.example.dietforskin.ui.theme.DietForSkinTheme
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.MainViewModel
@@ -36,85 +38,95 @@ import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
-  private val mainViewModel by viewModels<MainViewModel>()
+    private val mainViewModel by viewModels<MainViewModel>()
 
-  @OptIn(ExperimentalMaterial3Api::class)
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    @OptIn(ExperimentalMaterial3Api::class)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    setContent {
-      val navController = rememberNavController()
-      val context = LocalContext.current
-      DietForSkinTheme {
-        val authRepository =
-          AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
-        val authManager = AuthManager(authRepository, this)
+        setContent {
+            val navController = rememberNavController()
+            val context = LocalContext.current
 
-        val sharedPreferences =
-          getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-        val savedEmail = sharedPreferences.getString("email", null)
-        val savedPassword = sharedPreferences.getString("password", null)
+            DietForSkinTheme {
+                val authRepository =
+                    AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
+                val authManager = AuthManager(authRepository, this)
 
-        if (savedEmail != null && savedPassword != null) {
-          lifecycleScope.launch {
-            authManager.login(savedEmail, savedPassword, navController, mainViewModel)
-          }
-        } else {
-          mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
-        }
+                val sharedPreferences =
+                    getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+                val savedEmail = sharedPreferences.getString("email", null)
+                val savedPassword = sharedPreferences.getString("password", null)
 
-        Surface(
-          modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-        ) {
-          Scaffold(
-            topBar = {
-              TopBarView(mainViewModel)
-            },
-            modifier = Modifier.fillMaxSize(),
-            bottomBar = {
-              BottomBarView(
-                navController = navController,
-                mainViewModel = mainViewModel
-              )
+                if (savedEmail != null && savedPassword != null) {
+                    lifecycleScope.launch {
+                        authManager.login(savedEmail, savedPassword, navController, mainViewModel)
+                    }
+                } else {
+                    mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
+                }
+
+                Surface(
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                ) {
+                    Scaffold(
+                        topBar = {
+                            if(mainViewModel.showBar){
+                                TopBarView(mainViewModel)
+                            }
+
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        bottomBar = {
+                            if(mainViewModel.showBar){
+                                BottomBarView(
+                                    navController = navController,
+                                    mainViewModel = mainViewModel
+                                )
+                            }
+
+                        }
+                    ) { paddingValues ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = Screen.Splash.route,
+                            modifier = Modifier.padding(paddingValues = paddingValues)
+                        ) {
+                            composable(Screen.Splash.route) {
+                                AnimatedSplashScreen(navController = navController,mainViewModel=mainViewModel)
+                            }
+                            composable(ScreensBottomBar.Home.route) {
+                                MainViewOfPosts(mainViewModel)
+                            }
+                            composable(ScreensBottomBar.Favorite.route) {
+                                FavoritePostsView(mainViewModel = mainViewModel, context = context)
+                            }
+                            composable(ScreensBottomBar.AddPost.route) {
+                                AddPostView()
+                            }
+                            composable(ScreensBottomBar.Profile.route) {
+                                ProfileView(
+                                    navController = navController,
+                                    mainViewModel = mainViewModel,
+                                    context = context
+                                )
+                            }
+                            composable(ScreensBottomBar.CreateAccount.route) {
+                                CreateAccount(
+                                    navController = navController,
+                                    context = context
+                                )
+                            }
+                            composable(ScreensBottomBar.Chat.route) {
+                                Chat(
+                                    navController = navController,
+                                    context = context
+                                )
+                            }
+                        }
+                    }
+                }
             }
-          ) { paddingValues ->
-            NavHost(
-              navController = navController,
-              startDestination = ScreensBottomBar.Home.route,
-              modifier = Modifier.padding(paddingValues = paddingValues)
-            ) {
-              composable(ScreensBottomBar.Home.route) {
-                MainViewOfPosts()
-              }
-              composable(ScreensBottomBar.Favorite.route) {
-                FavoritePostsView(mainViewModel = mainViewModel, context = context)
-              }
-              composable(ScreensBottomBar.AddPost.route) {
-                AddPostView()
-              }
-              composable(ScreensBottomBar.Profile.route) {
-                ProfileView(
-                  navController = navController,
-                  mainViewModel = mainViewModel,
-                  context = context
-                )
-              }
-              composable(ScreensBottomBar.CreateAccount.route) {
-                CreateAccount(
-                  navController = navController,
-                  context = context
-                )
-              }
-              composable(ScreensBottomBar.Chat.route) {
-                Chat(
-                  navController = navController,
-                  context = context
-                )
-              }
-            }
-          }
         }
-      }
     }
-  }
 }

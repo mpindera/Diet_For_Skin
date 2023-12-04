@@ -10,4 +10,8 @@
     <string name="create_account">STWÓRZ KONTO</string>
     <string name="username">NAZWA</string>
     <string name="email">EMAIL</string>
+    <string name="log_out">WYLOGUJ</string>
+    <string name="log_out_text">Czy na pewno chcesz się wylogować?</string>
+    <string name="yes">Tak</string>
+    <string name="cancel">Anuluj</string>
 </resources>

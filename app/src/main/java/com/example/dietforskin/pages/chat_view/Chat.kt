@@ -1,4 +1,4 @@
-package com.example.dietforskin.pages.chat
+package com.example.dietforskin.pages.chat_view
 
 import android.content.Context
 import androidx.compose.runtime.Composable

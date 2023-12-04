@@ -1,4 +1,4 @@
-package com.example.dietforskin.pages.profileview
+package com.example.dietforskin.pages.profile_view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

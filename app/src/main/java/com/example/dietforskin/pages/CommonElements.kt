@@ -50,9 +50,6 @@ class CommonElements {
                     )
                 }
             )
-
-
-
             Text(
                 text = label,
                 fontSize = 20.sp,

@@ -36,7 +36,6 @@ import androidx.navigation.NavHostController
 import com.example.dietforskin.R
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
-import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorCircle
@@ -109,7 +108,8 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
                     ForgotPasswordForm(email = email,
                         authManager = authManager,
                         onValueChangeEmail = pagesViewModel::onEmailChanged,
-                        backToLoginText = {
+                        coroutineScope = coroutineScope,
+                                backToLoginText = {
                             Text(
                                 modifier = Modifier
                                     .padding(top = 5.dp)
@@ -152,6 +152,7 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
                                 fontStyle = FontStyle.Italic
                             )
                         })
+
                 }
             }
         }

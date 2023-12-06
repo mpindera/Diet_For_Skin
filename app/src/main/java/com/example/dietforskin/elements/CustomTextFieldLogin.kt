@@ -1,5 +1,6 @@
 package com.example.dietforskin.elements
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TextField
@@ -16,14 +17,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTextField(
     value: String,
@@ -36,30 +31,26 @@ fun CustomTextField(
 ) {
     val focusManager = LocalFocusManager.current
 
-    var typingJob by remember { mutableStateOf<Job?>(null) }
+    val typingJob by remember { mutableStateOf<Job?>(null) }
+    BackHandler {
 
+        typingJob?.cancel()
+        focusManager.clearFocus()
+    }
     TextField(
         modifier = Modifier.shadow(15.dp),
         value = value,
-        onValueChange = {
-            onValueChange(it)
-            typingJob?.cancel()
-            typingJob = CoroutineScope(Dispatchers.Default).launch {
-                delay(2000)
-                if (isActive) {
-                    focusManager.clearFocus()
-                }
-            }
-        },
+        onValueChange = onValueChange,
         label = label,
-        colors = TextFieldDefaults.textFieldColors(
-            unfocusedLabelColor = Color.Black,
-            focusedLabelColor = colorTextFieldsAndButton,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = colorTextFieldsAndButton,
+            unfocusedContainerColor = colorTextFieldsAndButton,
+            disabledContainerColor = colorTextFieldsAndButton,
             cursorColor = Color.Black,
-            textColor = Color.Black,
-            containerColor = colorTextFieldsAndButton,
             focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedLabelColor = colorTextFieldsAndButton,
+            unfocusedLabelColor = Color.Black,
         ),
         keyboardOptions = keyboardOptions,
         visualTransformation = visualTransformation,

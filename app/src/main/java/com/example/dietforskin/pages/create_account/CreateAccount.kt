@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.PagesViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -128,18 +130,17 @@ fun CreateAccount(navController: NavHostController, context: Context) {
                                 pagesViewModel.onSelectedRoleChanged(it); isFold = false
                             })
                     }
-
+                    val focusManager = LocalFocusManager.current
+                    val typingJob by remember { mutableStateOf<Job?>(null) }
+                    val generatedPassword = generateRandom()
+                    pagesViewModel.onPasswordChanged(generatedPassword)
+                    val uuid = UUID.randomUUID().toString()
                     ElevatedButton(
                         modifier = Modifier
                             .padding(top = 20.dp)
                             .align(Alignment.CenterEnd),
+                        enabled = authManager.checkingAllFields(username,email,role,uuid),
                         onClick = {
-
-                            val generatedPassword = generateRandom()
-                            pagesViewModel.onPasswordChanged(generatedPassword)
-
-                            val uuid = UUID.randomUUID().toString()
-                            if (username.isNotEmpty() && email.isNotEmpty() && role != "ROLE") {
                                 coroutineScope.launch {
                                     DatabaseRepositoryImpl(
                                         database = Firebase,
@@ -157,11 +158,9 @@ fun CreateAccount(navController: NavHostController, context: Context) {
                                         password = generatedPassword,
                                         navController = navController
                                     )
-
                                     pagesViewModel.clearFields()
-                                }
-                            } else {
-                                Reports(context = context).errorFillAllFields()
+                                    typingJob?.cancel()
+                                    focusManager.clearFocus()
                             }
                         },
                         shape = RoundedCornerShape(0.dp),

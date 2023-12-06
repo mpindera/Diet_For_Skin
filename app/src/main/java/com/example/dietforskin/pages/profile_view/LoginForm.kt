@@ -12,9 +12,13 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -28,6 +32,7 @@ import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,6 +50,7 @@ fun LoginForm(
     trailingIcon: @Composable () -> Unit,
     forgetText: @Composable () -> Unit,
 ) {
+
     Column(modifier = Modifier.padding(15.dp)) {
         CommonElements().CustomTextFieldEmail(
             email = email.lowercase(),
@@ -64,7 +70,9 @@ fun LoginForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 20.dp), onClick = {
+                .padding(top = 20.dp),
+            enabled = authManager.checkingAllFields(email, password),
+            onClick = {
                 coroutineScope.launch {
                     authManager.login(email, password, navController, mainViewModel)
                 }
@@ -73,6 +81,7 @@ fun LoginForm(
             ), elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
         ) {
             Text(text = stringResource(id = R.string.login_in), letterSpacing = 1.sp)
+
         }
 
         Box(

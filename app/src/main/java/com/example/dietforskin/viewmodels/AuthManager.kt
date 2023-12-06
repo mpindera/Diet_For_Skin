@@ -1,7 +1,6 @@
 package com.example.dietforskin.viewmodels
 
 import android.content.Context
-import android.widget.Toast
 import androidx.navigation.NavHostController
 import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
@@ -60,7 +59,7 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
 
             is Resource.Error -> {
                 navController.navigate(ScreensBottomBar.Profile.route)
-
+                Reports(context = context).errorEmailDoesNotExists()
             }
         }
     }
@@ -118,6 +117,18 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                 Reports(context).errorRegisterPerson()
             }
         }
+    }
+
+    fun checkingAllFields(email: String, password: String): Boolean {
+        return email.isNotEmpty() && password.isNotEmpty()
+    }
+
+    fun checkingAllFields(email: String): Boolean {
+        return email.isNotEmpty()
+    }
+
+    fun checkingAllFields(username: String, email: String, role: String, uuid: String): Boolean {
+        return username.isNotEmpty() && email.isNotEmpty() && role != "ROLE" && uuid.isNotEmpty()
     }
 
 }

@@ -17,6 +17,8 @@ import com.example.dietforskin.R
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -24,19 +26,23 @@ fun ForgotPasswordForm(
     email: String,
     authManager: AuthManager,
     onValueChangeEmail: (String) -> Unit,
+    coroutineScope: CoroutineScope,
     backToLoginText: @Composable () -> Unit,
 ) {
     Column(modifier = Modifier.padding(15.dp)) {
-        CommonElements().CustomTextFieldEmail(email = email, onValueChangeEmail = onValueChangeEmail)
+        CommonElements().CustomTextFieldEmail(
+            email = email,
+            onValueChangeEmail = onValueChangeEmail
+        )
 
         ElevatedButton(
             modifier = Modifier
                 .align(Alignment.End)
-                .padding(top = 35.dp), onClick = {
-                if (email.isNotEmpty()) {
-                    runBlocking {
-                        authManager.resetPasswordPatient(email = email)
-                    }
+                .padding(top = 35.dp),
+            enabled = authManager.checkingAllFields(email),
+            onClick = {
+                coroutineScope.launch  {
+                    authManager.resetPasswordPatient(email = email)
                 }
             }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(
                 containerColor = colorTextFieldsAndButton, contentColor = Color.Black

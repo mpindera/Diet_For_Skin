@@ -21,6 +21,12 @@ class PagesViewModel : ViewModel() {
         _selectedRole.value = selectedRole
     }
 
+    private var _selectedDietitian = MutableStateFlow("DIETITIAN")
+    val selectedDietitian: StateFlow<String> = _selectedDietitian
+    fun onSelectedDietitianChanged(selectedDietitian: String) {
+        _selectedDietitian.value = selectedDietitian
+    }
+
     /** Common Email section in Create Account and Profile View **/
 
     private var _email = MutableStateFlow("")
@@ -42,6 +48,7 @@ class PagesViewModel : ViewModel() {
         _email.value = ""
         _password.value = ""
         _selectedRole.value = "ROLE"
+        _selectedDietitian.value = "DIETITIAN"
     }
 
 

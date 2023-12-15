@@ -1,9 +1,7 @@
 package com.example.dietforskin.data.profile.person
 
-data class Person(
+data class Patient(
     val username: String,
     val email: String,
-    val role: String,
-    val uuid: String,
-    val dietitian: String
+    val uuid: String
 )

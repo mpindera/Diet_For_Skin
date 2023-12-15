@@ -68,12 +68,12 @@ class MainActivity : ComponentActivity() {
                 val doubleClickThreshold = 500
 
                 if (savedEmail != null && savedPassword != null) {
-                    Log.d("test5","jestem tutaj w logged")
+                    Log.d("test5", "jestem tutaj w logged")
                     lifecycleScope.launch {
                         authManager.login(savedEmail, savedPassword, navController, mainViewModel)
                     }
                 } else {
-                    Log.d("test5","jestem tutaj w notLogged")
+                    Log.d("test5", "jestem tutaj w notLogged")
                     mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
                 }
 
@@ -83,7 +83,10 @@ class MainActivity : ComponentActivity() {
                     Scaffold(
                         topBar = {
                             if (mainViewModel.showBar) {
-                                TopBarView(mainViewModel=mainViewModel,navController=navController)
+                                TopBarView(
+                                    mainViewModel = mainViewModel,
+                                    navController = navController
+                                )
                             }
 
                         }, modifier = Modifier.fillMaxSize(), bottomBar = {
@@ -129,7 +132,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(ScreensBottomBar.Chat.route) {
                                 Chat(
-                                    navController = navController, context = context
+                                    navController = navController,
+                                    context = context,
+                                    mainViewModel = mainViewModel
                                 )
                             }
                         }

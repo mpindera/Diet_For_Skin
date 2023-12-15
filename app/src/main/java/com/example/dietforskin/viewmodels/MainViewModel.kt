@@ -26,6 +26,7 @@ class MainViewModel : ViewModel() {
         get() = selection == PagesToRoles.ADMIN_LOGGED
 
     var showDialog by mutableStateOf(false)
+    var showListOfPatients by mutableStateOf(false)
 
     val isPatientLogged: Boolean
         get() = selection == PagesToRoles.PATIENT_LOGGED

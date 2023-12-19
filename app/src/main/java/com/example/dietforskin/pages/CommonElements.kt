@@ -20,8 +20,13 @@ import androidx.compose.ui.unit.sp
 import com.example.dietforskin.R
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.ui.theme.colorPinkMain
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 
 class CommonElements {
+    val db = Firebase.firestore
+    val mAuth = FirebaseAuth.getInstance()
     @Composable
     fun canvasWithName(label: String) {
         Box(modifier = Modifier.fillMaxWidth()) {

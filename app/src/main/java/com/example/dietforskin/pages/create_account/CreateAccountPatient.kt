@@ -28,16 +28,18 @@ import com.example.dietforskin.viewmodels.PagesViewModel
 fun CreateAccountPatient(pagesViewModel: PagesViewModel) {
     val username by pagesViewModel.username.collectAsState()
     val email by pagesViewModel.email.collectAsState()
+    Column {
+        CustomTextFieldUsername(
+            username = username, onValueChangeUsername = pagesViewModel::onUsernameChanged
+        )
 
-    CustomTextFieldUsername(
-        username = username, onValueChangeUsername = pagesViewModel::onUsernameChanged
-    )
+        Spacer(modifier = Modifier.padding(12.dp))
 
-    Spacer(modifier = Modifier.padding(12.dp))
+        CommonElements().CustomTextFieldEmail(
+            email = email, onValueChangeEmail = pagesViewModel::onEmailChanged
+        )
+    }
 
-    CommonElements().CustomTextFieldEmail(
-        email = email, onValueChangeEmail = pagesViewModel::onEmailChanged
-    )
 }
 @Composable
 fun CreateAccountPatientChooseDietitian(pagesViewModel: PagesViewModel, dietitian: String){

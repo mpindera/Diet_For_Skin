@@ -16,58 +16,50 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 
 @Composable
-fun BottomBarView(navController: NavHostController, mainViewModel: MainViewModel) {
-    val selectedScreen by mainViewModel.selectedScreen
+fun BottomBarView(navController: NavHostController, profileViewModel: ProfileViewModel) {
+    val selectedScreen by profileViewModel.selectedScreen
 
-  NavigationBar {
-    mainViewModel.selectedBottomBar().forEach { screen ->
-      val selected = selectedScreen == screen
-      NavigationBarItem(
-        selected = selected,
-        onClick = {
-          mainViewModel.updateSelectedScreen(screen)
-          navController.navigate(screen.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-              saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-          }
-        },
-        label = { Text(screen.label) },
-        icon = {
-          val vector =
-            if (selected) screen.filledIcon else screen.outlinedIcon ?: screen.filledIcon
+    NavigationBar {
+        profileViewModel.selectedBottomBar().forEach { screen ->
+            val selected = selectedScreen == screen
+            NavigationBarItem(selected = selected, onClick = {
+                profileViewModel.updateSelectedScreen(screen)
+                navController.navigate(screen.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }, label = { Text(screen.label) }, icon = {
+                val vector =
+                    if (selected) screen.filledIcon else screen.outlinedIcon ?: screen.filledIcon
 
-          AnimatedContent(
-            targetState = vector,
-            label = "vector",
-            transitionSpec = {
-              fadeIn(animationSpec = tween(250)).togetherWith(
-                fadeOut(
-                  animationSpec = tween(
-                    250
-                  )
-                )
-              )
-            }
-          ) {
-            if (screen == ScreensBottomBar.Favorite) {
-              Icon(
-                imageVector = it,
-                contentDescription = screen.label,
-                tint = Color(0xFFE07575)
-              )
-            } else {
-              Icon(
-                imageVector = it, contentDescription = screen.label
-              )
-            }
-          }
+                AnimatedContent(targetState = vector, label = "vector", transitionSpec = {
+                    fadeIn(animationSpec = tween(250)).togetherWith(
+                        fadeOut(
+                            animationSpec = tween(
+                                250
+                            )
+                        )
+                    )
+                }) {
+                    if (screen == ScreensBottomBar.Favorite) {
+                        Icon(
+                            imageVector = it,
+                            contentDescription = screen.label,
+                            tint = Color(0xFFE07575)
+                        )
+                    } else {
+                        Icon(
+                            imageVector = it, contentDescription = screen.label
+                        )
+                    }
+                }
+            })
         }
-      )
     }
-  }
 }

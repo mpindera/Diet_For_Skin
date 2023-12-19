@@ -45,6 +45,8 @@ import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
+
 @Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,9 +70,9 @@ fun previewProfileView(){
         modifier = Modifier.fillMaxSize(), color = colorPinkMain
     ) {
         Scaffold(topBar = {
-            TopBarView(MainViewModel(), navController)
+            TopBarView(ProfileViewModel(), navController)
         }, modifier = Modifier.fillMaxSize(), bottomBar = {
-            BottomBarView(navController = navController, mainViewModel = MainViewModel())
+            BottomBarView(navController = navController, profileViewModel = ProfileViewModel())
         }) { paddingValues ->
             Box(
                 modifier = Modifier

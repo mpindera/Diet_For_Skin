@@ -12,13 +12,9 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -30,9 +26,8 @@ import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
-import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +39,7 @@ fun LoginForm(
     coroutineScope: CoroutineScope,
     authManager: AuthManager,
     navController: NavHostController,
-    mainViewModel: MainViewModel,
+    profileViewModel: ProfileViewModel,
     onValueChangeEmail: (String) -> Unit,
     onValueChangePassword: (String) -> Unit,
     trailingIcon: @Composable () -> Unit,
@@ -74,7 +69,7 @@ fun LoginForm(
             enabled = authManager.checkingAllFields(email, password),
             onClick = {
                 coroutineScope.launch {
-                    authManager.login(email, password, navController, mainViewModel)
+                    authManager.login(email, password, navController, profileViewModel)
                 }
             }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(
                 containerColor = colorTextFieldsAndButton, contentColor = Color.Black

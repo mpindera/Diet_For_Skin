@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun MainViewOfPosts(mainViewModel: MainViewModel) {
-    mainViewModel.onShowBarChanged(true)
 
 
 }

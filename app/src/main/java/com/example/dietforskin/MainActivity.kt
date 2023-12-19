@@ -9,7 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -37,16 +36,24 @@ import com.example.dietforskin.pages.main_view.MainViewOfPosts
 import com.example.dietforskin.pages.profile_view.ProfileView
 import com.example.dietforskin.pages.splash_screen.AnimatedSplashScreen
 import com.example.dietforskin.ui.theme.DietForSkinTheme
+import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.AuthManager
+import com.example.dietforskin.viewmodels.ChatViewModel
+import com.example.dietforskin.viewmodels.FavoritePostsViewModel
 import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
+    private val chatViewModel by viewModels<ChatViewModel>()
+    private val profileViewModel by viewModels<ProfileViewModel>()
+    private val animatedSplashScreenViewModel by viewModels<AnimatedSplashScreenViewModel>()
+    private val favoritePostsViewModel by viewModels<FavoritePostsViewModel>()
 
-    @OptIn(ExperimentalMaterial3Api::class)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -70,33 +77,33 @@ class MainActivity : ComponentActivity() {
                 if (savedEmail != null && savedPassword != null) {
                     Log.d("test5", "jestem tutaj w logged")
                     lifecycleScope.launch {
-                        authManager.login(savedEmail, savedPassword, navController, mainViewModel)
+                        authManager.login(
+                            savedEmail, savedPassword, navController, profileViewModel
+                        )
                     }
                 } else {
                     Log.d("test5", "jestem tutaj w notLogged")
-                    mainViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
+                    profileViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
                 }
 
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    Scaffold(
-                        topBar = {
-                            if (mainViewModel.showBar) {
-                                TopBarView(
-                                    mainViewModel = mainViewModel,
-                                    navController = navController
-                                )
-                            }
+                    Scaffold(topBar = {
+                        if (animatedSplashScreenViewModel.showBar) {
+                            TopBarView(
+                                profileViewModel = profileViewModel, navController = navController
+                            )
+                        }
 
-                        }, modifier = Modifier.fillMaxSize(), bottomBar = {
-                            if (mainViewModel.showBar) {
-                                BottomBarView(
-                                    navController = navController, mainViewModel = mainViewModel
-                                )
-                            }
+                    }, modifier = Modifier.fillMaxSize(), bottomBar = {
+                        if (animatedSplashScreenViewModel.showBar) {
+                            BottomBarView(
+                                navController = navController, profileViewModel = profileViewModel
+                            )
+                        }
 
-                        }) { paddingValues ->
+                    }) { paddingValues ->
                         NavHost(
                             navController = navController,
                             startDestination = Screen.Splash.route,
@@ -104,15 +111,16 @@ class MainActivity : ComponentActivity() {
                         ) {
                             composable(Screen.Splash.route) {
                                 AnimatedSplashScreen(
-                                    navController = navController, mainViewModel = mainViewModel
+                                    navController = navController,
+                                    animatedSplashScreenViewModel = animatedSplashScreenViewModel
                                 )
                             }
                             composable(ScreensBottomBar.Home.route) {
-                                MainViewOfPosts(mainViewModel)
+                                MainViewOfPosts(mainViewModel = mainViewModel)
                             }
                             composable(ScreensBottomBar.Favorite.route) {
                                 FavoritePostsView(
-                                    mainViewModel = mainViewModel, context = context
+                                    favoritePostsViewModel = favoritePostsViewModel, context = context
                                 )
                             }
                             composable(ScreensBottomBar.AddPost.route) {
@@ -121,7 +129,7 @@ class MainActivity : ComponentActivity() {
                             composable(ScreensBottomBar.Profile.route) {
                                 ProfileView(
                                     navController = navController,
-                                    mainViewModel = mainViewModel,
+                                    profileViewModel = profileViewModel,
                                     context = context
                                 )
                             }
@@ -134,7 +142,7 @@ class MainActivity : ComponentActivity() {
                                 Chat(
                                     navController = navController,
                                     context = context,
-                                    mainViewModel = mainViewModel
+                                    chatViewModel = chatViewModel
                                 )
                             }
                         }

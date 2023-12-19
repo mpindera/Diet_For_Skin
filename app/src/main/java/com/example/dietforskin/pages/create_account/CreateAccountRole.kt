@@ -25,6 +25,7 @@ import com.example.dietforskin.viewmodels.PagesViewModel
 @Composable
 fun CreateAccountRole(pagesViewModel: PagesViewModel) {
     val role by pagesViewModel.selectedRole.collectAsState()
+
     var isFold by remember {
         mutableStateOf(false)
     }
@@ -34,7 +35,7 @@ fun CreateAccountRole(pagesViewModel: PagesViewModel) {
                 .padding(
                     top = 20.dp
                 )
-                .align(Alignment.BottomStart),
+                .align(pagesViewModel.modif(pagesViewModel.visibilityOfAnimation)),
             onClick = {
                 isFold = !isFold
 

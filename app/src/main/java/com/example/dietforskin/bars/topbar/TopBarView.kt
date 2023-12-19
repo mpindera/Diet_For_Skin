@@ -24,12 +24,12 @@ import com.example.dietforskin.R
 import com.example.dietforskin.ui.theme.colorCardIngredient
 import com.example.dietforskin.ui.theme.fontFamilyTitle
 import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarView(mainViewModel: MainViewModel, navController: NavHostController) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+fun TopBarView(profileViewModel: ProfileViewModel, navController: NavHostController) {
     TopAppBar(title = {
         Text(
             text = stringResource(id = R.string.app_name),
@@ -41,17 +41,11 @@ fun TopBarView(mainViewModel: MainViewModel, navController: NavHostController) {
 
 
     }, navigationIcon = {
-        if (mainViewModel.isAdminLogged || mainViewModel.isPatientLogged) {
-            IconButton(onClick = {
-                mainViewModel.showListOfPatients = true
-            }) {
-                Icon(imageVector = Icons.Filled.Menu, contentDescription = null)
-            }
-        }
+
     }, actions = {
-        if (mainViewModel.isAdminLogged || mainViewModel.isPatientLogged) {
+        if (profileViewModel.isAdminLogged || profileViewModel.isPatientLogged) {
             IconButton(onClick = {
-                mainViewModel.showDialog = true
+                profileViewModel.showDialog = true
 
             }) {
                 Icon(imageVector = Icons.Filled.ExitToApp, contentDescription = null)
@@ -61,15 +55,9 @@ fun TopBarView(mainViewModel: MainViewModel, navController: NavHostController) {
         containerColor = colorCardIngredient
     )
     )
-    if (mainViewModel.showDialog) {
+    if (profileViewModel.showDialog) {
 
-        AlertdialogToLogout(mainViewModel = mainViewModel, navController = navController)
-    }
-    if (mainViewModel.showListOfPatients) {
-        val scope = rememberCoroutineScope()
-        scope.launch {
-            drawerState.open()
-        }
+        AlertdialogToLogout(profileViewModel = profileViewModel, navController = navController)
     }
 }
 

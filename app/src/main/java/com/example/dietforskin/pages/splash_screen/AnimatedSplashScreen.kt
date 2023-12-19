@@ -27,11 +27,12 @@ import androidx.navigation.NavHostController
 import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.ui.theme.colorCardIngredient
 import com.example.dietforskin.ui.theme.fontFamilyTitle
+import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.MainViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun AnimatedSplashScreen(navController: NavHostController, mainViewModel: MainViewModel) {
+fun AnimatedSplashScreen(navController: NavHostController, animatedSplashScreenViewModel: AnimatedSplashScreenViewModel) {
     val visible by remember { mutableStateOf(true) }
 
     AnimatedVisibility(
@@ -45,7 +46,7 @@ fun AnimatedSplashScreen(navController: NavHostController, mainViewModel: MainVi
     LaunchedEffect(key1 = true) {
         delay(2000)
 
-        mainViewModel.onShowBarChanged(true)
+        animatedSplashScreenViewModel.onShowBarChanged(true)
         navController.navigate(ScreensBottomBar.Home.route)
     }
 

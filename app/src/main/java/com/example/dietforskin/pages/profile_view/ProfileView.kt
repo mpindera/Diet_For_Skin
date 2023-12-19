@@ -40,8 +40,8 @@ import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.viewmodels.AuthManager
-import com.example.dietforskin.viewmodels.MainViewModel
 import com.example.dietforskin.viewmodels.PagesViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 /** Profile is a activity where everyone has to write mail, password to join into panel.
@@ -50,8 +50,12 @@ email. Then, open email to change password. Every new Patient have to click and 
 
  **/
 @Composable
-fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, context: Context) {
-    mainViewModel.updateSelectionOfPagesSite(PagesSite.PROFILE_VIEW)
+fun ProfileView(
+    navController: NavHostController,
+    context: Context,
+    profileViewModel: ProfileViewModel
+) {
+    profileViewModel.updateSelectionOfPagesSite(PagesSite.PROFILE_VIEW)
 
     val pagesViewModel = remember { PagesViewModel() }
     val email by pagesViewModel.email.collectAsState()
@@ -131,7 +135,7 @@ fun ProfileView(navController: NavHostController, mainViewModel: MainViewModel, 
                         coroutineScope = coroutineScope,
                         authManager = authManager,
                         navController = navController,
-                        mainViewModel = mainViewModel,
+                        profileViewModel = profileViewModel,
                         onValueChangeEmail = pagesViewModel::onEmailChanged,
                         onValueChangePassword = pagesViewModel::onPasswordChanged,
                         trailingIcon = {

@@ -38,6 +38,7 @@ import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,7 +62,7 @@ fun previewCreateAccount() {
         modifier = Modifier.fillMaxSize(), color = colorPinkMain
     ) {
         Scaffold(topBar = {}, modifier = Modifier.fillMaxSize(), bottomBar = {
-            BottomBarView(navController = navController, mainViewModel = MainViewModel())
+            BottomBarView(navController = navController, profileViewModel = ProfileViewModel())
         }) { paddingValues ->
             Box(
                 modifier = Modifier

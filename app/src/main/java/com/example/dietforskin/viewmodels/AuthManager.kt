@@ -7,32 +7,28 @@ import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.PagesToRoles
 import com.example.dietforskin.data.auth.Resource
 import com.example.dietforskin.navigation.Screen
+import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.report.Reports
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 
 
 class AuthManager(private val authRepository: AuthRepository, private val context: Context) {
-    private val db = Firebase.firestore
-    private val mAuth = FirebaseAuth.getInstance()
 
     suspend fun login(
         email: String,
         password: String,
         navController: NavHostController,
-        mainViewModel: MainViewModel
+        profileViewModel: ProfileViewModel
     ) {
         when (authRepository.loginUser(email, password)) {
             is Resource.Success -> {
-                mAuth.currentUser?.let {
+                CommonElements().mAuth.currentUser?.let {
                     val role = getUserRoleFromSharedPreferences()
-                    mainViewModel.updateSelection(role)
+                    profileViewModel.updateSelection(role)
                     saveUserCredentials(email, password, role)
                 }
-                db.collection("users").get().addOnSuccessListener { documents ->
+                CommonElements().db.collection("users").get().addOnSuccessListener { documents ->
                     for (document in documents) {
                         val userData = document.data
                         val role = userData["role"].toString()
@@ -43,12 +39,12 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                             check(
                                 role = role,
                                 username = username,
-                                mainViewModel = mainViewModel,
+                                profileViewModel = profileViewModel,
                                 context = context
                             )
                         }
                     }
-                    mainViewModel.updateSelectedScreen(ScreensBottomBar.Home)
+                    profileViewModel.updateSelectedScreen(ScreensBottomBar.Home)
                     navController.navigate(Screen.Splash.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
@@ -68,7 +64,7 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
         email: String
     ) = coroutineScope {
         try {
-            val documents = db.collection("users").get().await()
+            val documents = CommonElements().db.collection("users").get().await()
             var foundMatch = false
 
             for (document in documents) {
@@ -133,13 +129,13 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
 
 }
 
-fun check(role: String, mainViewModel: MainViewModel, context: Context, username: String) {
+fun check(role: String, profileViewModel: ProfileViewModel, context: Context, username: String) {
     if (role == "Patient") {
         Reports(context).loggedSuccess(username = username)
-        mainViewModel.updateSelection(PagesToRoles.PATIENT_LOGGED)
+        profileViewModel.updateSelection(PagesToRoles.PATIENT_LOGGED)
     }
     if (role == "Admin") {
         Reports(context).loggedSuccess(username = username)
-        mainViewModel.updateSelection(PagesToRoles.ADMIN_LOGGED)
+        profileViewModel.updateSelection(PagesToRoles.ADMIN_LOGGED)
     }
 }

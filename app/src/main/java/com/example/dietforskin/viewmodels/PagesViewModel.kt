@@ -1,6 +1,7 @@
 package com.example.dietforskin.viewmodels
 
 
+import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,21 @@ class PagesViewModel : ViewModel() {
     val selectedDietitian: StateFlow<String> = _selectedDietitian
     fun onSelectedDietitianChanged(selectedDietitian: String) {
         _selectedDietitian.value = selectedDietitian
+    }
+
+    private val _visibilityOfAnimation = MutableStateFlow(false)
+    val visibilityOfAnimation: StateFlow<Boolean> = _visibilityOfAnimation
+
+    fun onVisibilityChanged(visibility: Boolean) {
+        _visibilityOfAnimation.value = visibility
+    }
+
+    fun modif(visibilityOfAnimation: StateFlow<Boolean>): Alignment{
+        return if(visibilityOfAnimation.value){
+            Alignment.BottomStart
+        }else{
+            Alignment.Center
+        }
     }
 
     /** Common Email section in Create Account and Profile View **/

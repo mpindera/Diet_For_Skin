@@ -7,12 +7,14 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class ScreensBottomBar(
@@ -58,8 +60,8 @@ sealed class ScreensBottomBar(
 
     object Chat : ScreensBottomBar(
         route = "chat",
-        label= "Chat",
-        filledIcon = Icons.Filled.Create,
-        outlinedIcon = Icons.Outlined.Create
+        label = "Chat",
+        filledIcon = Icons.Filled.Send,
+        outlinedIcon = Icons.Outlined.Send
     )
 }

@@ -33,37 +33,30 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AnimatedSplashScreen(navController: NavHostController, animatedSplashScreenViewModel: AnimatedSplashScreenViewModel) {
-    val visible by remember { mutableStateOf(true) }
-
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(initialAlpha = 0.4f),
-        exit = fadeOut(animationSpec = tween(durationMillis = 2000))
-    ){
-        Splash()
-    }
-
-    LaunchedEffect(key1 = true) {
-        delay(2000)
-
-        animatedSplashScreenViewModel.onShowBarChanged(true)
-        navController.navigate(ScreensBottomBar.Home.route)
-    }
-
-
-}
-
-@Composable
-fun Splash() {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxSize()
             .background(colorCardIngredient)
     ) {
-        Text(
-            "Diet For Skin", fontFamily = fontFamilyTitle,
-            letterSpacing = 1.sp
-        )
+        val visible by remember { mutableStateOf(true) }
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(initialAlpha = 0.4f),
+            exit = fadeOut(animationSpec = tween(durationMillis = 2000))
+        ){
+            Text(
+                "Diet For Skin", fontFamily = fontFamilyTitle,
+                letterSpacing = 1.sp
+            )
+        }
+
+        LaunchedEffect(key1 = true) {
+            delay(2000)
+
+            animatedSplashScreenViewModel.onShowBarChanged(true)
+            navController.navigate(ScreensBottomBar.Home.route)
+        }
     }
 }

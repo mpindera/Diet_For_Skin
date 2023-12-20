@@ -43,7 +43,8 @@ fun CreateAccountButton(
     generatedPassword: String,
     focusManager: FocusManager,
     typingJob: Job?,
-    checkIfAdmin: Boolean
+    checkIfAdmin: Boolean,
+    passwordAdmin: String
 ) {
     var isFold by remember {
         mutableStateOf(false)
@@ -61,24 +62,42 @@ fun CreateAccountButton(
                 .align(Alignment.BottomEnd),
             enabled = authManager.checkingAllFields(username, email, role, uuid),
             onClick = {
-                coroutineScope.launch {
-                    addToDietitian(uuid)
-                    addCreatedAccountToDatabase(
-                        context = context,
-                        navController = navController,
-                        authManager = authManager,
-                        pagesViewModel = pagesViewModel,
-                        username = username,
-                        email = email,
-                        role = role,
-                        uuid = uuid,
-                        dietitian = dietitian,
-                        generatedPassword = generatedPassword,
-                        focusManager = focusManager,
-                        typingJob = typingJob
-                    )
-                    isFold = false
-                    isFoldAdmin = false
+                if (checkIfAdmin) {
+                    coroutineScope.launch {
+                        addCreatedAdminToDatabase(
+                            context = context,
+                            authManager = authManager,
+                            pagesViewModel = pagesViewModel,
+                            username = username,
+                            email = email,
+                            role = role,
+                            uuid = uuid,
+                            password = passwordAdmin,
+                            focusManager = focusManager,
+                            typingJob = typingJob
+                        )
+                        isFold = false
+                        isFoldAdmin = false
+                    }
+                } else {
+                    coroutineScope.launch {
+                        addToDietitian(uuid)
+                        addCreatedAccountToDatabase(
+                            context = context,
+                            authManager = authManager,
+                            pagesViewModel = pagesViewModel,
+                            username = username,
+                            email = email,
+                            role = role,
+                            uuid = uuid,
+                            dietitian = dietitian,
+                            generatedPassword = generatedPassword,
+                            focusManager = focusManager,
+                            typingJob = typingJob
+                        )
+                        isFold = false
+                        isFoldAdmin = false
+                    }
                 }
             },
             shape = RoundedCornerShape(0.dp),

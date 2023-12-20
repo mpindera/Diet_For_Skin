@@ -1,6 +1,7 @@
 package com.example.dietforskin.data.database
 
 import android.content.Context
+import com.example.dietforskin.data.profile.person.Admin
 import com.example.dietforskin.data.profile.person.Person
 import com.example.dietforskin.report.Reports
 import com.google.firebase.Firebase
@@ -12,6 +13,15 @@ class DatabaseRepositoryImpl(private val database: Firebase, private val context
     override suspend fun addPersonToDatabase(person: Person): DatabaseResource {
         return try {
             database.firestore.collection("users").add(person)
+            DatabaseResource.Success(reports = Reports(context = context).savedInDatabase())
+        } catch (e: Exception) {
+            DatabaseResource.Error(reports = Reports(context = context).errorForSavingToDatabase())
+        }
+    }
+
+    override suspend fun addAdminToDatabase(admin: Admin): DatabaseResource {
+        return try {
+            database.firestore.collection("users").add(admin)
             DatabaseResource.Success(reports = Reports(context = context).savedInDatabase())
         } catch (e: Exception) {
             DatabaseResource.Error(reports = Reports(context = context).errorForSavingToDatabase())

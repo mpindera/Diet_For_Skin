@@ -26,8 +26,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
@@ -42,15 +40,16 @@ import com.example.dietforskin.R
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.database.DatabaseRepositoryImpl
+import com.example.dietforskin.data.profile.person.Admin
 import com.example.dietforskin.data.profile.person.Person
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
+import com.example.dietforskin.report.Reports
 import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.PagesViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.Job
@@ -72,6 +71,7 @@ fun CreateAccount(navController: NavHostController, context: Context) {
     val checkIfPatient = pagesViewModel.selectedRole.value == "Patient"
     val checkIfAdmin = pagesViewModel.selectedRole.value == "Admin"
     val visibility by pagesViewModel.visibilityOfAnimation.collectAsState()
+    val passwordAdmin by pagesViewModel.passwordAdmin.collectAsState()
 
 
     val authRepository: AuthRepository =
@@ -139,6 +139,7 @@ fun CreateAccount(navController: NavHostController, context: Context) {
                     pagesViewModel = pagesViewModel,
                     dietitian = dietitian,
                     generatedPassword = generatedPassword,
+                    passwordAdmin = passwordAdmin,
                     focusManager = focusManager,
                     typingJob = typingJob,
                     checkIfAdmin = checkIfAdmin
@@ -153,23 +154,25 @@ suspend fun addToDietitian(uuid: String) {
     val mAuthCurrentAdminEmail = FirebaseAuth.getInstance().currentUser?.email
 
     val documents = CommonElements().db.collection("users").get().await()
+    try {
+        for (document in documents) {
+            val userData = document.data
+            val userEmail = userData["email"].toString()
+            val userAdmin = userData["role"].toString()
+            val currentUserDocRef = CommonElements().db.collection("users").document(document.id)
 
-    for (document in documents) {
-        val userData = document.data
-        val userEmail = userData["email"].toString()
-        val userAdmin = userData["role"].toString()
-        val currentUserDocRef = CommonElements().db.collection("users").document(document.id)
+            if (userEmail == mAuthCurrentAdminEmail && userAdmin == "Admin") {
+                currentUserDocRef.update("listOfPatients", FieldValue.arrayUnion(uuid))
 
-        if (userEmail == mAuthCurrentAdminEmail && userAdmin == "Admin") {
-            currentUserDocRef.update("listOfPatients", FieldValue.arrayUnion(uuid))
-
+            }
         }
+    } catch (e: Exception) {
+        Log.e("Error Fetching", "Error fetching user data", e)
     }
 }
 
 suspend fun addCreatedAccountToDatabase(
     context: Context,
-    navController: NavHostController,
     authManager: AuthManager,
     pagesViewModel: PagesViewModel,
     username: String,
@@ -189,11 +192,55 @@ suspend fun addCreatedAccountToDatabase(
         )
     )
     authManager.register(
-        email = email, password = generatedPassword, navController = navController
+        email = email, password = generatedPassword
     )
     pagesViewModel.clearFields()
     typingJob?.cancel()
     focusManager.clearFocus()
+}
+
+suspend fun addCreatedAdminToDatabase(
+    context: Context,
+    authManager: AuthManager,
+    pagesViewModel: PagesViewModel,
+    username: String,
+    email: String,
+    role: String,
+    uuid: String,
+    password: String,
+    focusManager: FocusManager,
+    typingJob: Job?
+) {
+    if (checkPassword(password = password)) {
+        try {
+            DatabaseRepositoryImpl(
+                database = Firebase, context = context
+            ).addAdminToDatabase(
+                Admin(
+                    username = username,
+                    email = email,
+                    role = role,
+                    uuid = uuid,
+                    listOfPatients = emptyList()
+                )
+            )
+            authManager.register(
+                email = email, password = password
+            )
+        } catch (e: Exception) {
+            println(e.toString())
+        }
+        pagesViewModel.clearFields()
+        typingJob?.cancel()
+        focusManager.clearFocus()
+    } else {
+        Reports(context).errorPasswordInvalid()
+    }
+}
+
+private fun checkPassword(password: String): Boolean {
+    val regex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*!]).{6}$")
+    return regex.matches(password)
 }
 
 @Composable
@@ -203,6 +250,18 @@ fun CustomTextFieldUsername(username: String, onValueChangeUsername: (String) ->
         onValueChange = onValueChangeUsername,
         label = {
             Text(text = ("USERNAME"), letterSpacing = 1.sp)
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+    )
+}
+
+@Composable
+fun CustomTextFieldPassword(passwordAdmin: String, onValueChangePasswordAdmin: (String) -> Unit) {
+    CustomTextField(
+        value = passwordAdmin,
+        onValueChange = onValueChangePasswordAdmin,
+        label = {
+            Text(text = ("PASSWORD"), letterSpacing = 1.sp)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     )
@@ -235,6 +294,7 @@ fun ShowDropMenuForDietitian(
 ) {
     val adminUsernames = remember { mutableStateListOf<String>() }
     val coroutineScope = rememberCoroutineScope()
+
     DropdownMenu(
         expanded = isFoldAdmin,
         onDismissRequest = { !isFoldAdmin },
@@ -243,27 +303,29 @@ fun ShowDropMenuForDietitian(
             .height(100.dp)
     ) {
         coroutineScope.launch {
-            val currentUserEmail = Firebase.auth.currentUser?.email
-            val documents = Firebase.firestore.collection("users").get().await()
-            adminUsernames.clear()
-            for (document in documents) {
-                val userData = document.data
-                val role = userData["role"].toString()
-                val username = userData["username"].toString()
-                val email = userData["email"].toString()
+            try {
+                val documents = Firebase.firestore.collection("users").get().await()
 
-                if (currentUserEmail == email && role == "Admin") {
-                    adminUsernames.add(username)
+                adminUsernames.clear()
+
+                for (document in documents) {
+                    val userData = document.data
+                    val role = userData["role"].toString()
+                    val username = userData["username"].toString()
+
+                    if (role == "Admin") {
+                        adminUsernames.add(username)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e("ShowDropMenuForDietitian", "Error fetching user data", e)
             }
         }
+
         for (username in adminUsernames) {
-            DropdownMenuItem(text = {
-                Text(username)
-            }, onClick = {
+            DropdownMenuItem(text = { Text(username) }, onClick = {
                 onRoleSelected(username)
             })
-
         }
     }
 }

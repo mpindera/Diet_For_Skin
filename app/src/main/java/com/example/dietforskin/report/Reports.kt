@@ -42,6 +42,10 @@ class Reports(val context: Context) {
         Toast.makeText(context, context.getString(R.string.email_not_exists), Toast.LENGTH_LONG)
             .show()
     }
+    fun errorPasswordInvalid() {
+        Toast.makeText(context, context.getString(R.string.email_not_exists), Toast.LENGTH_LONG)
+            .show()
+    }
 
 
 }

@@ -19,5 +19,6 @@
     <string name="saved_in_database">The data has been saved to database</string>
     <string name="registe_person">Person has been registered</string>
     <string name="error_register_person">Error during registration</string>
+    <string name="error_password_invalid">The given password is invalid. [ Password should be at least 6 characters ]</string>
 
 </resources>

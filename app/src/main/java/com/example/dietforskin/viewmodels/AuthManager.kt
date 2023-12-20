@@ -1,6 +1,7 @@
 package com.example.dietforskin.viewmodels
 
 import android.content.Context
+import android.util.Log
 import androidx.navigation.NavHostController
 import com.example.dietforskin.navigation.ScreensBottomBar
 import com.example.dietforskin.data.auth.AuthRepository
@@ -23,39 +24,48 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
     ) {
         when (authRepository.loginUser(email, password)) {
             is Resource.Success -> {
-                CommonElements().mAuth.currentUser?.let {
-                    val role = getUserRoleFromSharedPreferences()
-                    profileViewModel.updateSelection(role)
-                    saveUserCredentials(email, password, role)
-                }
-                CommonElements().db.collection("users").get().addOnSuccessListener { documents ->
-                    for (document in documents) {
-                        val userData = document.data
-                        val role = userData["role"].toString()
-                        val userEmail = userData["email"].toString()
-                        val username = userData["username"].toString()
+                try {
+                    CommonElements().mAuth.currentUser?.let {
+                        val role = getUserRoleFromSharedPreferences()
+                        profileViewModel.updateSelection(role)
+                        saveUserCredentials(email, password, role)
+                    }
+                    CommonElements().db.collection("users").get()
+                        .addOnSuccessListener { documents ->
+                            for (document in documents) {
+                                val userData = document.data
+                                val role = userData["role"].toString()
+                                val userEmail = userData["email"].toString()
+                                val username = userData["username"].toString()
 
-                        if (userEmail == email) {
-                            check(
-                                role = role,
-                                username = username,
-                                profileViewModel = profileViewModel,
-                                context = context
-                            )
+                                if (userEmail == email) {
+                                    check(
+                                        role = role,
+                                        username = username,
+                                        profileViewModel = profileViewModel,
+                                        context = context
+                                    )
+                                }
+                            }
+                            profileViewModel.updateSelectedScreen(ScreensBottomBar.Home)
+                            navController.navigate(Screen.Splash.route) {
+                                popUpTo(Screen.Splash.route) { inclusive = true }
+                            }
+                        }.addOnFailureListener {
+                            Reports(context = context).errorFetchFromDatabase()
                         }
-                    }
-                    profileViewModel.updateSelectedScreen(ScreensBottomBar.Home)
-                    navController.navigate(Screen.Splash.route) {
-                        popUpTo(Screen.Splash.route) { inclusive = true }
-                    }
-                }.addOnFailureListener {
-                    Reports(context = context).errorFetchFromDatabase()
+                } catch (e: Exception) {
+                    Log.e("Error Login", "Error Login", e)
                 }
             }
 
             is Resource.Error -> {
-                navController.navigate(ScreensBottomBar.Profile.route)
-                Reports(context = context).errorEmailDoesNotExists()
+                try {
+                    navController.navigate(ScreensBottomBar.Profile.route)
+                    Reports(context = context).errorEmailDoesNotExists()
+                } catch (e: Exception) {
+                    Log.e("Error", "Error", e)
+                }
             }
         }
     }
@@ -103,17 +113,22 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
         return PagesToRoles.valueOf(roleString ?: PagesToRoles.NOT_LOGGED.name)
     }
 
-    suspend fun register(email: String, password: String, navController: NavHostController) {
-        when (authRepository.registerUser(email, password)) {
-            is Resource.Success -> {
-                Reports(context).registerPerson()
-            }
+    suspend fun register(email: String, password: String) {
+        try {
+            when (authRepository.registerUser(email, password)) {
+                is Resource.Success -> {
+                    Reports(context).registerPerson()
+                }
 
-            is Resource.Error -> {
-                Reports(context).errorRegisterPerson()
+                is Resource.Error -> {
+                    Reports(context).errorRegisterPerson()
+                }
             }
+        } catch (e: Exception) {
+            Log.e("Error Register", "Error Register", e)
         }
     }
+
 
     fun checkingAllFields(email: String, password: String): Boolean {
         return email.isNotEmpty() && password.isNotEmpty()

@@ -59,6 +59,13 @@ class PagesViewModel : ViewModel() {
         _password.value = password
     }
 
+    private var _passwordAdmin = MutableStateFlow("")
+    val passwordAdmin: StateFlow<String> = _passwordAdmin
+
+    fun onPasswordAdminChanged(passwordAdmin: String) {
+        _passwordAdmin.value = passwordAdmin
+    }
+
     fun clearFields() {
         _username.value = ""
         _email.value = ""

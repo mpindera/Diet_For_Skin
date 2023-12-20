@@ -21,9 +21,16 @@ import com.example.dietforskin.viewmodels.PagesViewModel
 fun CreateAccountAdmin(pagesViewModel: PagesViewModel) {
     val username by pagesViewModel.username.collectAsState()
     val email by pagesViewModel.email.collectAsState()
+    val passwordAdmin by pagesViewModel.passwordAdmin.collectAsState()
     Column {
         CustomTextFieldUsername(
             username = username, onValueChangeUsername = pagesViewModel::onUsernameChanged
+        )
+
+        Spacer(modifier = Modifier.padding(12.dp))
+
+        CustomTextFieldPassword(
+            passwordAdmin = passwordAdmin, onValueChangePasswordAdmin = pagesViewModel::onPasswordAdminChanged
         )
 
         Spacer(modifier = Modifier.padding(12.dp))

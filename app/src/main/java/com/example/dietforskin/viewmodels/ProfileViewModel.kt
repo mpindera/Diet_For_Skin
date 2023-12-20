@@ -74,18 +74,21 @@ class ProfileViewModel : ViewModel() {
         context: Context,
         navController: NavHostController
     ) {
-        profileViewModel.showDialog = false
-        navController.navigate(Screen.Splash.route) {
-            popUpTo(Screen.Splash.route) { inclusive = true }
+        try {
+            profileViewModel.showDialog = false
+            navController.navigate(Screen.Splash.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
+            }
+            authRepository.logoutUser()
+            profileViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
+            val sharedPreferences =
+                context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.clear()
+            editor.apply()
+        } catch (e: Exception) {
+            e.toString()
         }
-        authRepository.logoutUser()
-        profileViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
-        val sharedPreferences =
-            context.getSharedPreferences("user_credentials", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.clear()
-        editor.apply()
-
     }
 
 }

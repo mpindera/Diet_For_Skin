@@ -33,6 +33,7 @@ import com.example.dietforskin.navigation.Screen
 import com.example.dietforskin.pages.chat_view.Chat
 import com.example.dietforskin.pages.favorite_view.FavoritePostsView
 import com.example.dietforskin.pages.main_view.MainViewOfPosts
+import com.example.dietforskin.pages.patient_information_view.UpdatePatientInformation
 import com.example.dietforskin.pages.profile_view.ProfileView
 import com.example.dietforskin.pages.splash_screen.AnimatedSplashScreen
 import com.example.dietforskin.ui.theme.DietForSkinTheme
@@ -75,14 +76,12 @@ class MainActivity : ComponentActivity() {
                 val doubleClickThreshold = 500
 
                 if (savedEmail != null && savedPassword != null) {
-                    Log.d("test5", "jestem tutaj w logged")
                     lifecycleScope.launch {
                         authManager.login(
                             savedEmail, savedPassword, navController, profileViewModel
                         )
                     }
                 } else {
-                    Log.d("test5", "jestem tutaj w notLogged")
                     profileViewModel.updateSelection(PagesToRoles.NOT_LOGGED)
                 }
 
@@ -120,7 +119,8 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(ScreensBottomBar.Favorite.route) {
                                 FavoritePostsView(
-                                    favoritePostsViewModel = favoritePostsViewModel, context = context
+                                    favoritePostsViewModel = favoritePostsViewModel,
+                                    context = context
                                 )
                             }
                             composable(ScreensBottomBar.AddPost.route) {
@@ -144,6 +144,9 @@ class MainActivity : ComponentActivity() {
                                     context = context,
                                     chatViewModel = chatViewModel
                                 )
+                            }
+                            composable(Screen.PatientInformation.route) {
+                                UpdatePatientInformation()
                             }
                         }
                         BackHandler {

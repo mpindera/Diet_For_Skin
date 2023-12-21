@@ -20,8 +20,10 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
         email: String,
         password: String,
         navController: NavHostController,
-        profileViewModel: ProfileViewModel
+        profileViewModel: ProfileViewModel,
+        animatedSplashScreenViewModel: AnimatedSplashScreenViewModel,
     ) {
+        animatedSplashScreenViewModel.onShowBarChanged(false)
         when (authRepository.loginUser(email, password)) {
             is Resource.Success -> {
                 try {
@@ -51,6 +53,7 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                             navController.navigate(Screen.Splash.route) {
                                 popUpTo(Screen.Splash.route) { inclusive = true }
                             }
+
                         }.addOnFailureListener {
                             Reports(context = context).errorFetchFromDatabase()
                         }

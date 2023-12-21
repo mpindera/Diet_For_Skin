@@ -1,7 +1,9 @@
 package com.example.dietforskin.pages
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -19,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dietforskin.R
 import com.example.dietforskin.elements.CustomTextField
+import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -27,13 +31,14 @@ import com.google.firebase.firestore.firestore
 class CommonElements {
     val db = Firebase.firestore
     val mAuth = FirebaseAuth.getInstance()
+
     @Composable
     fun canvasWithName(label: String) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Canvas(
                 modifier = Modifier.align(alignment = Alignment.TopStart),
                 onDraw = {
-                    val rectangleSize = Size(label.length.dp.toPx()*10, 140.dp.toPx())
+                    val rectangleSize = Size(label.length.dp.toPx() * 10, 140.dp.toPx())
                     val circleRadius = 70.dp.toPx()
 
                     val offsetY = 70.dp.toPx()
@@ -79,4 +84,15 @@ class CommonElements {
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         )
     }
+
+    @Composable
+    fun CanvasBackground(modifier: Modifier) {
+        Spacer(modifier = Modifier.border(1.dp, Color.Black))
+        Canvas(modifier = modifier, onDraw = {
+            drawCircle(
+                color = colorCircle, radius = 450.dp.toPx()
+            )
+        })
+    }
+
 }

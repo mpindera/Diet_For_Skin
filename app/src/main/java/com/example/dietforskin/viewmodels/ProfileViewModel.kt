@@ -14,7 +14,7 @@ import com.example.dietforskin.navigation.Screen
 import com.example.dietforskin.navigation.ScreensBottomBar
 
 class ProfileViewModel : ViewModel() {
-    private var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
+    var selectionOfPagesSite by mutableStateOf(PagesSite.MAIN_VIEW_POSTS)
     private val _selectedScreen = mutableStateOf<ScreensBottomBar>(ScreensBottomBar.Home)
     var selection by mutableStateOf(PagesToRoles.NOT_LOGGED)
         private set
@@ -72,7 +72,8 @@ class ProfileViewModel : ViewModel() {
         profileViewModel: ProfileViewModel,
         authRepository: AuthRepository,
         context: Context,
-        navController: NavHostController
+        navController: NavHostController,
+        animatedSplashScreenViewModel: AnimatedSplashScreenViewModel
     ) {
         try {
             profileViewModel.showDialog = false
@@ -86,6 +87,7 @@ class ProfileViewModel : ViewModel() {
             val editor = sharedPreferences.edit()
             editor.clear()
             editor.apply()
+            animatedSplashScreenViewModel.onShowBarChanged(false)
         } catch (e: Exception) {
             e.toString()
         }

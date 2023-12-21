@@ -25,6 +25,7 @@ import com.example.dietforskin.R
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
+import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.ProfileViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -44,6 +45,7 @@ fun LoginForm(
     onValueChangePassword: (String) -> Unit,
     trailingIcon: @Composable () -> Unit,
     forgetText: @Composable () -> Unit,
+    animatedSplashScreenViewModel: AnimatedSplashScreenViewModel,
 ) {
 
     Column(modifier = Modifier.padding(15.dp)) {
@@ -69,7 +71,13 @@ fun LoginForm(
             enabled = authManager.checkingAllFields(email, password),
             onClick = {
                 coroutineScope.launch {
-                    authManager.login(email, password, navController, profileViewModel)
+                    authManager.login(
+                        email,
+                        password,
+                        navController,
+                        profileViewModel,
+                        animatedSplashScreenViewModel
+                    )
                 }
             }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(
                 containerColor = colorTextFieldsAndButton, contentColor = Color.Black

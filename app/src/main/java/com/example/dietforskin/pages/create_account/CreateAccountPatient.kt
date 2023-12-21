@@ -28,6 +28,7 @@ import com.example.dietforskin.viewmodels.PagesViewModel
 fun CreateAccountPatient(pagesViewModel: PagesViewModel) {
     val username by pagesViewModel.username.collectAsState()
     val email by pagesViewModel.email.collectAsState()
+
     Column {
         CustomTextFieldUsername(
             username = username, onValueChangeUsername = pagesViewModel::onUsernameChanged

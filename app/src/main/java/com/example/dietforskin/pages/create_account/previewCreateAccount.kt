@@ -69,12 +69,7 @@ fun previewCreateAccount() {
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                Spacer(modifier = Modifier.border(1.dp, Color.Black))
-                Canvas(modifier = Modifier.align(alignment = Alignment.TopEnd), onDraw = {
-                    drawCircle(
-                        color = colorCircle, radius = 450.dp.toPx()
-                    )
-                })
+                CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
 
                 CommonElements().canvasWithName(stringResource(id = R.string.create_account))
 

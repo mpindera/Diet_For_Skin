@@ -39,6 +39,7 @@ import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorCircle
+import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.PagesViewModel
 import com.example.dietforskin.viewmodels.ProfileViewModel
@@ -53,7 +54,8 @@ email. Then, open email to change password. Every new Patient have to click and 
 fun ProfileView(
     navController: NavHostController,
     context: Context,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    animatedSplashScreenViewModel: AnimatedSplashScreenViewModel
 ) {
     profileViewModel.updateSelectionOfPagesSite(PagesSite.PROFILE_VIEW)
 
@@ -84,12 +86,7 @@ fun ProfileView(
             .fillMaxSize()
             .padding()
     ) {
-        Spacer(modifier = Modifier.border(1.dp, Color.Black))
-        Canvas(modifier = Modifier.align(alignment = Alignment.TopEnd), onDraw = {
-            drawCircle(
-                color = colorCircle, radius = 450.dp.toPx()
-            )
-        })
+        CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
         CommonElements().canvasWithName(stringResource(id = R.string.profile))
 
         Box(
@@ -113,7 +110,7 @@ fun ProfileView(
                         authManager = authManager,
                         onValueChangeEmail = pagesViewModel::onEmailChanged,
                         coroutineScope = coroutineScope,
-                                backToLoginText = {
+                        backToLoginText = {
                             Text(
                                 modifier = Modifier
                                     .padding(top = 5.dp)
@@ -132,6 +129,7 @@ fun ProfileView(
                         } else {
                             VisualTransformation.None
                         },
+                        animatedSplashScreenViewModel = animatedSplashScreenViewModel,
                         coroutineScope = coroutineScope,
                         authManager = authManager,
                         navController = navController,

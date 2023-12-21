@@ -5,11 +5,8 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,7 +26,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,14 +36,15 @@ import com.example.dietforskin.R
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.database.DatabaseRepositoryImpl
+import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.data.profile.person.Admin
 import com.example.dietforskin.data.profile.person.Person
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.report.Reports
-import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.PagesViewModel
+import com.example.dietforskin.viewmodels.ProfileViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -61,7 +58,11 @@ import java.util.UUID
 Admin has to write username, email, role, but password is generated automatically.
  **/
 @Composable
-fun CreateAccount(navController: NavHostController, context: Context) {
+fun CreateAccount(
+    navController: NavHostController,
+    context: Context,
+    profileViewModel: ProfileViewModel
+) {
 
     val pagesViewModel = remember { PagesViewModel() }
     val username by pagesViewModel.username.collectAsState()
@@ -88,19 +89,14 @@ fun CreateAccount(navController: NavHostController, context: Context) {
     if (checkIfAdmin || checkIfPatient) {
         pagesViewModel.onVisibilityChanged(true)
     }
-
+    profileViewModel.updateSelectionOfPagesSite(PagesSite.CREATE_ACCOUNT_VIEW)
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding()
 
     ) {
-        Spacer(modifier = Modifier.border(1.dp, Color.Black))
-        Canvas(modifier = Modifier.align(alignment = Alignment.TopEnd), onDraw = {
-            drawCircle(
-                color = colorCircle, radius = 450.dp.toPx()
-            )
-        })
+        CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
 
         CommonElements().canvasWithName(stringResource(id = R.string.create_account))
 

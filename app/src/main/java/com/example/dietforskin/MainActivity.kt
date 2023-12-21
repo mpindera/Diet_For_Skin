@@ -2,7 +2,6 @@ package com.example.dietforskin
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -78,7 +77,11 @@ class MainActivity : ComponentActivity() {
                 if (savedEmail != null && savedPassword != null) {
                     lifecycleScope.launch {
                         authManager.login(
-                            savedEmail, savedPassword, navController, profileViewModel
+                            savedEmail,
+                            savedPassword,
+                            navController,
+                            profileViewModel,
+                            animatedSplashScreenViewModel
                         )
                     }
                 } else {
@@ -91,7 +94,9 @@ class MainActivity : ComponentActivity() {
                     Scaffold(topBar = {
                         if (animatedSplashScreenViewModel.showBar) {
                             TopBarView(
-                                profileViewModel = profileViewModel, navController = navController
+                                profileViewModel = profileViewModel,
+                                navController = navController,
+                                animatedSplashScreenViewModel = animatedSplashScreenViewModel
                             )
                         }
 
@@ -115,38 +120,49 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable(ScreensBottomBar.Home.route) {
-                                MainViewOfPosts(mainViewModel = mainViewModel)
+                                MainViewOfPosts(
+                                    mainViewModel = mainViewModel,
+                                    profileViewModel = profileViewModel
+                                )
                             }
                             composable(ScreensBottomBar.Favorite.route) {
                                 FavoritePostsView(
                                     favoritePostsViewModel = favoritePostsViewModel,
-                                    context = context
+                                    context = context,
+                                    profileViewModel = profileViewModel
                                 )
                             }
                             composable(ScreensBottomBar.AddPost.route) {
-                                AddPostView()
+                                AddPostView(profileViewModel = profileViewModel)
                             }
                             composable(ScreensBottomBar.Profile.route) {
                                 ProfileView(
                                     navController = navController,
                                     profileViewModel = profileViewModel,
-                                    context = context
+                                    context = context,
+                                    animatedSplashScreenViewModel = animatedSplashScreenViewModel
                                 )
                             }
                             composable(ScreensBottomBar.CreateAccount.route) {
                                 CreateAccount(
-                                    navController = navController, context = context
+                                    navController = navController,
+                                    context = context,
+                                    profileViewModel = profileViewModel
                                 )
                             }
                             composable(ScreensBottomBar.Chat.route) {
                                 Chat(
                                     navController = navController,
                                     context = context,
-                                    chatViewModel = chatViewModel
+                                    chatViewModel = chatViewModel,
+                                    profileViewModel = profileViewModel
                                 )
                             }
                             composable(Screen.PatientInformation.route) {
-                                UpdatePatientInformation()
+                                UpdatePatientInformation(
+                                    profileViewModel = profileViewModel,
+                                    context = context
+                                )
                             }
                         }
                         BackHandler {

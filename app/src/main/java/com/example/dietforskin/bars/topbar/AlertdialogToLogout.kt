@@ -10,12 +10,16 @@ import androidx.navigation.NavHostController
 import com.example.dietforskin.R
 import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
-import com.example.dietforskin.viewmodels.MainViewModel
+import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun AlertdialogToLogout(profileViewModel: ProfileViewModel, navController: NavHostController) {
+fun AlertdialogToLogout(
+    profileViewModel: ProfileViewModel,
+    navController: NavHostController,
+    animatedSplashScreenViewModel: AnimatedSplashScreenViewModel
+) {
     val context = LocalContext.current
     val authRepository: AuthRepository =
         AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
@@ -31,7 +35,8 @@ fun AlertdialogToLogout(profileViewModel: ProfileViewModel, navController: NavHo
                 profileViewModel = profileViewModel,
                 authRepository = authRepository,
                 context = context,
-                navController = navController
+                navController = navController,
+                animatedSplashScreenViewModel=animatedSplashScreenViewModel
             )
             profileViewModel.showDialog = false
         }) {

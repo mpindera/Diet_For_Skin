@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">Diet for skin</string>
     <string name="create">STWÓRZ</string>
+    <string name="upload_PDF_File">Dodaj plik PDF</string>
     <string name="reset_Password">Resetuj hasło</string>
     <string name="login_in">ZALOGUJ</string>
     <string name="password">HASŁO</string>
@@ -21,5 +22,7 @@
     <string name="registe_person">Osoba została zarejestrowana</string>
     <string name="error_register_person">Błąd podczas rejestracji</string>
     <string name="error_password_invalid">Podane hasło jest nieprawidłowe. [Hasło powinno składać się z co najmniej 6 znaków ]</string>
-
+    <string name="update_profile">Aktualizacja profilu</string>
+    <string name="pdf_uploaded_successfully">Plik PDF został przesłany pomyślnie</string>
+    <string name="pdf_upload_failed">Przesyłanie pliku PDF nie powiodło się</string>
 </resources>

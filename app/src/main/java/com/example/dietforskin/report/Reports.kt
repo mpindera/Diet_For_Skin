@@ -10,6 +10,7 @@ class Reports(val context: Context) {
         Toast.makeText(context, context.getString(R.string.error_fetching_data), Toast.LENGTH_LONG)
             .show()
     }
+
     /** Login **/
     fun loggedSuccess(username: String) {
         Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
@@ -21,15 +22,18 @@ class Reports(val context: Context) {
             context, context.getText(R.string.error_for_saving_to_database), Toast.LENGTH_SHORT
         ).show()
     }
+
     /** Register **/
     fun savedInDatabase() {
         Toast.makeText(context, context.getText(R.string.saved_in_database), Toast.LENGTH_SHORT)
             .show()
     }
+
     /** Register **/
     fun registerPerson() {
         Toast.makeText(context, context.getText(R.string.registe_person), Toast.LENGTH_SHORT).show()
     }
+
     /** Register **/
     fun errorRegisterPerson() {
         Toast.makeText(context, context.getText(R.string.error_register_person), Toast.LENGTH_SHORT)
@@ -42,9 +46,18 @@ class Reports(val context: Context) {
         Toast.makeText(context, context.getString(R.string.email_not_exists), Toast.LENGTH_LONG)
             .show()
     }
+
     fun errorPasswordInvalid() {
         Toast.makeText(context, context.getString(R.string.email_not_exists), Toast.LENGTH_LONG)
             .show()
+    }
+
+    fun pdfUploadedSuccessfully() {
+        Toast.makeText(context, context.getString(R.string.pdf_uploaded_successfully), Toast.LENGTH_SHORT).show()
+    }
+
+    fun pdfUploadFailed() {
+        Toast.makeText(context, context.getString(R.string.pdf_upload_failed), Toast.LENGTH_SHORT).show()
     }
 
 

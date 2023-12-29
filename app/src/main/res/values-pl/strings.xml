@@ -3,6 +3,7 @@
     <string name="app_name">Diet for skin</string>
     <string name="create">STWÓRZ</string>
     <string name="upload_PDF_File">Dodaj plik PDF</string>
+    <string name="show_list_of_PDF_File">Pokaż listę plików PDF</string>
     <string name="add_PDF_File_to_database">Dodaj PDF to bazydanych</string>
     <string name="reset_Password">Resetuj hasło</string>
     <string name="login_in">ZALOGUJ</string>
@@ -26,4 +27,6 @@
     <string name="update_profile">Aktualizacja profilu</string>
     <string name="pdf_uploaded_successfully">Plik PDF został przesłany pomyślnie</string>
     <string name="pdf_upload_failed">Przesyłanie pliku PDF nie powiodło się</string>
+    <string name="list_of_PDF_File">Lista plików PDF</string>
+
 </resources>

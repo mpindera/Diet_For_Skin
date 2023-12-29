@@ -2,6 +2,7 @@
     <string name="app_name">Diet for skin</string>
     <string name="create">CREATE</string>
     <string name="upload_PDF_File">Upload PDF file</string>
+    <string name="show_list_of_PDF_File">Show list of PDF File</string>
     <string name="add_PDF_File_to_database">Add PDF to database</string>
     <string name="reset_Password">Reset password</string>
     <string name="login_in">LOGIN IN</string>
@@ -25,5 +26,6 @@
     <string name="update_profile">Update profile</string>
     <string name="pdf_uploaded_successfully">PDF Uploaded Successfully</string>
     <string name="pdf_upload_failed">PDF Upload Failed</string>
+    <string name="list_of_PDF_File">List of PDF File</string>
 
 </resources>

@@ -1,7 +1,5 @@
 package com.example.dietforskin.pages.profile_view
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,11 +40,11 @@ import com.example.dietforskin.bars.bottombar.BottomBarView
 import com.example.dietforskin.bars.topbar.TopBarView
 import com.example.dietforskin.elements.CustomTextField
 import com.example.dietforskin.pages.CommonElements
-import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.ProfileViewModel
+import com.example.dietforskin.viewmodels.UpdatePatientInformationViewModel
 
 @Preview(showBackground = true)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +69,12 @@ fun previewProfileView(){
         modifier = Modifier.fillMaxSize(), color = colorPinkMain
     ) {
         Scaffold(topBar = {
-            TopBarView(ProfileViewModel(), navController, AnimatedSplashScreenViewModel())
+            TopBarView(
+              ProfileViewModel(),
+              navController,
+              AnimatedSplashScreenViewModel(),
+              UpdatePatientInformationViewModel()
+            )
         }, modifier = Modifier.fillMaxSize(), bottomBar = {
             BottomBarView(navController = navController, profileViewModel = ProfileViewModel())
         }) { paddingValues ->

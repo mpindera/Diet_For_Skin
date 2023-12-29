@@ -53,226 +53,177 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun UpdatePatientInformation(
-    profileViewModel: ProfileViewModel,
-    context: Context,
-    updatePatientInformationViewModel: UpdatePatientInformationViewModel
+  profileViewModel: ProfileViewModel,
+  context: Context,
+  updatePatientInformationViewModel: UpdatePatientInformationViewModel,
+  uuid: String
 ) {
-    profileViewModel.updateSelectionOfPagesSite(PagesSite.UPDATE_PROFILE)
+  profileViewModel.updateSelectionOfPagesSite(PagesSite.UPDATE_PROFILE)
 
+  val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    uri?.let { updatePatientInformationViewModel.onPDFUriChanged(it) }
+  }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-        uri?.let { updatePatientInformationViewModel.onPDFUriChanged(it) }
-    }
+  Box(modifier = Modifier.fillMaxWidth()) {
+    CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
+    CommonElements().canvasWithName(label = stringResource(id = R.string.update_profile))
+  }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
-        CommonElements().canvasWithName(label = stringResource(id = R.string.update_profile))
+  Box(modifier = Modifier.fillMaxSize()) {
+    Column(
+      modifier = Modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      ElevatedButton(
+        modifier = Modifier.padding(end = 3.dp),
+        onClick = {
+          launcher.launch("application/pdf")
+        },
+        elevation = ButtonDefaults.buttonElevation(10.dp),
+        colors = ButtonDefaults.buttonColors(
+          colorPinkMain
+        )
+      ) {
+        Text(stringResource(id = R.string.upload_PDF_File), color = Color.Black)
+      }
 
-    }
+      PreviewPDFFile(
+        updatePatientInformationViewModel.pdfUri.value,
+        context,
+        updatePatientInformationViewModel
+      )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+      Spacer(modifier = Modifier.height(20.dp))
+
+      if (updatePatientInformationViewModel.pdfUri.value != null) {
+        ElevatedButton(
+          modifier = Modifier.padding(start = 3.dp),
+          onClick = {
+            uploadPdfToFirebase(
+              pdfUri = updatePatientInformationViewModel.pdfUri.value,
+              context = context,
+              updatePatientInformationViewModel = updatePatientInformationViewModel,
+              uuid = uuid
+            )
+          },
+          elevation = ButtonDefaults.buttonElevation(10.dp),
+          colors = ButtonDefaults.buttonColors(
+            colorPinkMain
+          )
         ) {
-            ElevatedButton(
-                modifier = Modifier.padding(end = 3.dp),
-                onClick = {
-                    launcher.launch("application/pdf")
-                },
-                elevation = ButtonDefaults.buttonElevation(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    colorPinkMain
-                )
-            ) {
-                Text(stringResource(id = R.string.upload_PDF_File), color = Color.Black)
-            }
-
-            PreviewPDFFile(updatePatientInformationViewModel.pdfUri.value, context,updatePatientInformationViewModel)
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            if (updatePatientInformationViewModel.pdfUri.value != null) {
-                ElevatedButton(
-                    modifier = Modifier.padding(start = 3.dp),
-                    onClick = {
-                        uploadPdfToFirebase(
-                            updatePatientInformationViewModel.pdfUri.value,
-                            context,
-                            updatePatientInformationViewModel
-                        )
-                    },
-                    elevation = ButtonDefaults.buttonElevation(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        colorPinkMain
-                    )
-                ) {
-                    Text(
-                        stringResource(id = R.string.add_PDF_File_to_database),
-                        color = Color.Black
-                    )
-                }
-            }
-
+          Text(
+            stringResource(id = R.string.add_PDF_File_to_database),
+            color = Color.Black
+          )
         }
+      }
+
     }
+  }
 }
 
 @Composable
 fun PdfRendererViewer(pdfUri: Uri) {
-    val context = LocalContext.current
-    val bitmap = remember { mutableStateOf<Bitmap?>(null) }
+  val context = LocalContext.current
+  val bitmap = remember { mutableStateOf<Bitmap?>(null) }
 
-    DisposableEffect(pdfUri) {
-        val parcelFileDescriptor = context.contentResolver.openFileDescriptor(pdfUri, "r")
-        val pdfRenderer = PdfRenderer(parcelFileDescriptor!!)
-        val page = pdfRenderer.openPage(0)
+  DisposableEffect(pdfUri) {
+    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(pdfUri, "r")
+    val pdfRenderer = PdfRenderer(parcelFileDescriptor!!)
+    val page = pdfRenderer.openPage(0)
 
-        try {
-            val bitmapResult = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-            page.render(bitmapResult, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-            bitmap.value = bitmapResult
-        } finally {
-            page.close()
-            pdfRenderer.close()
-        }
-
-        onDispose {
-            parcelFileDescriptor.close()
-        }
+    try {
+      val bitmapResult = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
+      page.render(bitmapResult, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+      bitmap.value = bitmapResult
+    } finally {
+      page.close()
+      pdfRenderer.close()
     }
 
-    bitmap.value?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentDescription = "PDF Page",
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxSize()
-        )
+    onDispose {
+      parcelFileDescriptor.close()
     }
+  }
 
-    bitmap.value?.asImageBitmap()?.let { Image(bitmap = it, contentDescription = null) }
+  bitmap.value?.let {
+    Image(
+      bitmap = it.asImageBitmap(),
+      contentDescription = "PDF Page",
+      contentScale = ContentScale.Fit,
+      modifier = Modifier
+        .fillMaxSize()
+    )
+  }
+
+  bitmap.value?.asImageBitmap()?.let { Image(bitmap = it, contentDescription = null) }
 }
 
 
-
 private fun uploadPdfToFirebase(
-    pdfUri: Uri?,
-    context: Context,
-    updatePatientInformationViewModel: UpdatePatientInformationViewModel
+  pdfUri: Uri?,
+  context: Context,
+  updatePatientInformationViewModel: UpdatePatientInformationViewModel,
+  uuid: String
 ) {
 
-    pdfUri?.let { uri ->
-        val storageRef = Firebase.storage.reference.child("pdfs/${"UUID"}/${"s"}.pdf")
-        val uploadTask = storageRef.putFile(uri)
+  pdfUri?.let { uri ->
+    val storageRef =
+      Firebase.storage.reference.child("pdfs/$uuid/${updatePatientInformationViewModel.fileName.value}.pdf")
+    val uploadTask = storageRef.putFile(uri)
 
-        uploadTask.addOnSuccessListener {
-            Reports(context).pdfUploadedSuccessfully()
-            updatePatientInformationViewModel.onPDFUriChanged(null)
-        }.addOnFailureListener {
-            Reports(context).pdfUploadFailed()
-        }
+    uploadTask.addOnSuccessListener {
+      Reports(context).pdfUploadedSuccessfully()
+      updatePatientInformationViewModel.onPDFUriChanged(null)
+    }.addOnFailureListener {
+      Reports(context).pdfUploadFailed()
     }
+  }
 }
 
 @Composable
 fun PreviewPDFFile(
-    pdfUri: Uri?,
-    context: Context,
-    updatePatientInformationViewModel: UpdatePatientInformationViewModel
+  pdfUri: Uri?,
+  context: Context,
+  updatePatientInformationViewModel: UpdatePatientInformationViewModel
 ) {
-    var showBitmap by remember { mutableStateOf(false) }
+  var showBitmap by remember { mutableStateOf(false) }
 
-    LaunchedEffect(showBitmap) {
-        delay(3000)
-        showBitmap = true
-    }
+  LaunchedEffect(showBitmap) {
+    delay(3000)
+    showBitmap = true
+  }
 
+  Column(
+    modifier = Modifier
+      .width(200.dp)
+      .height(220.dp)
+      .fillMaxWidth()
+  ) {
     Column(
-        modifier = Modifier
-            .width(200.dp)
-            .height(220.dp)
-            .fillMaxWidth()
+      modifier = Modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Card(
-                modifier = Modifier
-                    .width(150.dp)
-                    .height(150.dp),
-                elevation = CardDefaults.cardElevation(20.dp)
-            ) {
+      Card(
+        modifier = Modifier
+          .width(150.dp)
+          .height(150.dp),
+        elevation = CardDefaults.cardElevation(20.dp)
+      ) {
 
-                if (showBitmap) {
-                    if (pdfUri != null) {
-                        PdfRendererViewer(pdfUri)
-                    }
-                }
-            }
-
-            if (pdfUri != null) {
-                val fileName = updatePatientInformationViewModel.getFileName(context, pdfUri)
-                Text(text = "$fileName", modifier = Modifier.padding(vertical = 5.dp))
-            }
+        if (showBitmap) {
+          if (pdfUri != null) {
+            PdfRendererViewer(pdfUri)
+          }
         }
+      }
+
+      if (pdfUri != null) {
+        val fileName = updatePatientInformationViewModel.getFileName(context, pdfUri)
+        Text(text = "$fileName", modifier = Modifier.padding(vertical = 5.dp))
+      }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun test() {
-    val context = LocalContext.current
-    val pdfUri by remember { mutableStateOf<Uri?>(null) }
-    Box(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.border(1.dp, Color.Black))
-
-        Canvas(modifier = Modifier.align(Alignment.TopEnd), onDraw = {
-            drawCircle(
-                color = colorCircle, radius = 450.dp.toPx()
-            )
-        })
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ElevatedButton(
-                onClick = {
-
-                },
-                elevation = ButtonDefaults.buttonElevation(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    colorPinkMain
-                )
-            ) {
-                Text(stringResource(id = R.string.upload_PDF_File), color = Color.Black)
-            }
-
-            PreviewPDFFile(pdfUri, context, UpdatePatientInformationViewModel())
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            if (pdfUri == null) {
-                ElevatedButton(
-                    onClick = {
-
-                    },
-                    elevation = ButtonDefaults.buttonElevation(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        colorPinkMain
-                    )
-                ) {
-                    Text(
-                        stringResource(id = R.string.add_PDF_File_to_database),
-                        color = Color.Black
-                    )
-                }
-            }
-        }
-    }
+  }
 }

@@ -98,7 +98,8 @@ class MainActivity : ComponentActivity() {
                             TopBarView(
                                 profileViewModel = profileViewModel,
                                 navController = navController,
-                                animatedSplashScreenViewModel = animatedSplashScreenViewModel
+                                animatedSplashScreenViewModel = animatedSplashScreenViewModel,
+                                updatePatientInformationViewModel=updatePatientInformationViewModel
                             )
                         }
 
@@ -160,11 +161,14 @@ class MainActivity : ComponentActivity() {
                                     profileViewModel = profileViewModel
                                 )
                             }
-                            composable(Screen.PatientInformation.route) {
+                            composable(Screen.PatientInformation.route) { navBackStackEntry ->
+                                val uuid = navBackStackEntry.arguments?.getString("uuid") ?: ""
+
                                 UpdatePatientInformation(
                                     profileViewModel = profileViewModel,
                                     context = context,
-                                    updatePatientInformationViewModel=updatePatientInformationViewModel
+                                    updatePatientInformationViewModel = updatePatientInformationViewModel,
+                                    uuid = uuid
                                 )
                             }
                         }

@@ -3,6 +3,11 @@ package com.example.dietforskin.pages.create_account
 import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
@@ -59,285 +64,289 @@ Admin has to write username, email, role, but password is generated automaticall
  **/
 @Composable
 fun CreateAccount(
-    navController: NavHostController,
-    context: Context,
-    profileViewModel: ProfileViewModel
+  navController: NavHostController, context: Context, profileViewModel: ProfileViewModel
 ) {
 
-    val pagesViewModel = remember { PagesViewModel() }
-    val name by pagesViewModel.name.collectAsState()
-    val surname by pagesViewModel.surname.collectAsState()
-    val email by pagesViewModel.email.collectAsState()
-    val role by pagesViewModel.selectedRole.collectAsState()
-    val dietitian by pagesViewModel.selectedDietitian.collectAsState()
-    val checkIfPatient = pagesViewModel.selectedRole.value == "Patient"
-    val checkIfAdmin = pagesViewModel.selectedRole.value == "Admin"
-    val visibility by pagesViewModel.visibilityOfAnimation.collectAsState()
+  val pagesViewModel = remember { PagesViewModel() }
+  val name by pagesViewModel.name.collectAsState()
+  val surname by pagesViewModel.surname.collectAsState()
+  val email by pagesViewModel.email.collectAsState()
+  val role by pagesViewModel.selectedRole.collectAsState()
+  val dietitian by pagesViewModel.selectedDietitian.collectAsState()
+  val checkIfPatient = pagesViewModel.selectedRole.value == "Patient"
+  val checkIfAdmin = pagesViewModel.selectedRole.value == "Admin"
+  val visibility by pagesViewModel.visibilityOfAnimation.collectAsState()
 
-    val authRepository: AuthRepository =
-        AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
-    val authManager = AuthManager(authRepository, context)
+  val authRepository: AuthRepository =
+    AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
+  val authManager = AuthManager(authRepository, context)
 
 
-    val focusManager = LocalFocusManager.current
-    val typingJob by remember { mutableStateOf<Job?>(null) }
+  val focusManager = LocalFocusManager.current
+  val typingJob by remember { mutableStateOf<Job?>(null) }
 
-    val generatedPassword = generateRandom()
-    pagesViewModel.onPasswordChanged(generatedPassword)
+  val generatedPassword = generateRandom()
+  pagesViewModel.onPasswordChanged(generatedPassword)
 
-    val uuid = UUID.randomUUID().toString()
+  val uuid = UUID.randomUUID().toString()
 
-    if (checkIfAdmin || checkIfPatient) {
-        pagesViewModel.onVisibilityChanged(true)
-    }
-    profileViewModel.updateSelectionOfPagesSite(PagesSite.CREATE_ACCOUNT_VIEW)
+  if (checkIfAdmin || checkIfPatient) {
+    pagesViewModel.onVisibilityChanged(true)
+  }
+  profileViewModel.updateSelectionOfPagesSite(PagesSite.CREATE_ACCOUNT_VIEW)
+  Box(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding()
+
+  ) {
+    CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
+
+    CommonElements().canvasWithName(stringResource(id = R.string.create_account))
+
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding()
-
+      modifier = Modifier
+        .align(Alignment.Center)
+        .padding(start = 40.dp, end = 40.dp)
     ) {
-        CommonElements().CanvasBackground(modifier = Modifier.align(alignment = Alignment.TopEnd))
+      Column(modifier = Modifier.padding(15.dp)) {
 
-        CommonElements().canvasWithName(stringResource(id = R.string.create_account))
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(start = 40.dp, end = 40.dp)
+        AnimatedVisibility(
+          visible = visibility,
+          enter = fadeIn(
+            animationSpec = tween(
+              durationMillis = 1000, easing = FastOutSlowInEasing
+            )
+          ),
+          exit = fadeOut(animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing))
         ) {
-            Column(modifier = Modifier.padding(15.dp)) {
-
-                AnimatedVisibility(
-                    visible = visibility, enter = fadeIn(), exit = fadeOut()
-                ) {
-                    if (checkIfAdmin) {
-                        CreateAccountAdmin(pagesViewModel)
-                    } else if (checkIfPatient) {
-                        CreateAccountPatient(pagesViewModel)
-                    }
-                }
-
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    CreateAccountRole(pagesViewModel = pagesViewModel)
-                    if (checkIfPatient) {
-                        CreateAccountPatientChooseDietitian(pagesViewModel, dietitian)
-                    }
-                }
-
-                CreateAccountButton(
-                    authManager = authManager,
-                    name = name,
-                    surname = surname,
-                    email = email,
-                    role = role,
-                    uuid = uuid,
-                    context = context,
-                    navController = navController,
-                    pagesViewModel = pagesViewModel,
-                    dietitian = dietitian,
-                    generatedPassword = generatedPassword,
-                    focusManager = focusManager,
-                    typingJob = typingJob,
-                    checkIfAdmin = checkIfAdmin
-                )
-
+          Crossfade(
+            targetState = if (checkIfAdmin) "Admin" else "Patient",
+            label = "animationAccount",
+            animationSpec = tween(durationMillis = 500, easing = FastOutLinearInEasing)
+          ) { target ->
+            when (target) {
+              "Admin" -> CreateAccountAdmin(pagesViewModel)
+              "Patient" -> CreateAccountPatient(pagesViewModel)
             }
+          }
         }
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+          CreateAccountRole(pagesViewModel = pagesViewModel)
+          if (checkIfPatient) {
+            CreateAccountPatientChooseDietitian(pagesViewModel, dietitian)
+          }
+        }
+
+        CreateAccountButton(
+          authManager = authManager,
+          name = name,
+          surname = surname,
+          email = email,
+          role = role,
+          uuid = uuid,
+          context = context,
+          navController = navController,
+          pagesViewModel = pagesViewModel,
+          dietitian = dietitian,
+          generatedPassword = generatedPassword,
+          focusManager = focusManager,
+          typingJob = typingJob,
+          checkIfAdmin = checkIfAdmin
+        )
+
+      }
     }
+  }
 }
 
 suspend fun addToDietitian(uuid: String) {
-    val mAuthCurrentAdminEmail = FirebaseAuth.getInstance().currentUser?.email
+  val mAuthCurrentAdminEmail = FirebaseAuth.getInstance().currentUser?.email
 
-    val documents = CommonElements().db.collection("users").get().await()
-    try {
-        for (document in documents) {
-            val userData = document.data
-            val userEmail = userData["email"].toString()
-            val userAdmin = userData["role"].toString()
-            val currentUserDocRef = CommonElements().db.collection("users").document(document.id)
+  val documents = CommonElements().db.collection("users").get().await()
+  try {
+    for (document in documents) {
+      val userData = document.data
+      val userEmail = userData["email"].toString()
+      val userAdmin = userData["role"].toString()
+      val currentUserDocRef = CommonElements().db.collection("users").document(document.id)
 
-            if (userEmail == mAuthCurrentAdminEmail && userAdmin == "Admin") {
-                currentUserDocRef.update("listOfPatients", FieldValue.arrayUnion(uuid))
+      if (userEmail == mAuthCurrentAdminEmail && userAdmin == "Admin") {
+        currentUserDocRef.update("listOfPatients", FieldValue.arrayUnion(uuid))
 
-            }
-        }
-    } catch (e: Exception) {
-        Log.e("Error Fetching", "Error fetching user data", e)
+      }
     }
+  } catch (e: Exception) {
+    Log.e("Error Fetching", "Error fetching user data", e)
+  }
 }
 
 suspend fun addCreatedAccountToDatabase(
-    context: Context,
-    authManager: AuthManager,
-    pagesViewModel: PagesViewModel,
-    name: String,
-    surname: String,
-    email: String,
-    role: String,
-    uuid: String,
-    dietitian: String,
-    generatedPassword: String,
-    focusManager: FocusManager,
-    typingJob: Job?
+  context: Context,
+  authManager: AuthManager,
+  pagesViewModel: PagesViewModel,
+  name: String,
+  surname: String,
+  email: String,
+  role: String,
+  uuid: String,
+  dietitian: String,
+  generatedPassword: String,
+  focusManager: FocusManager,
+  typingJob: Job?
 ) {
-    DatabaseRepositoryImpl(
-        database = Firebase, context = context
-    ).addPersonToDatabase(
-        Person(
-            name = name,
-            surname = surname,
-            email = email,
-            role = role,
-            uuid = uuid,
-            dietitian = dietitian
-        )
+  DatabaseRepositoryImpl(
+    database = Firebase, context = context
+  ).addPersonToDatabase(
+    Person(
+      name = name, surname = surname, email = email, role = role, uuid = uuid, dietitian = dietitian
     )
-    authManager.register(
-        email = email, password = generatedPassword
-    )
-    pagesViewModel.clearFields()
-    typingJob?.cancel()
-    focusManager.clearFocus()
+  )
+  authManager.register(
+    email = email, password = generatedPassword
+  )
+  pagesViewModel.clearFields()
+  typingJob?.cancel()
+  focusManager.clearFocus()
 }
 
 suspend fun addCreatedAdminToDatabase(
-    context: Context,
-    authManager: AuthManager,
-    pagesViewModel: PagesViewModel,
-    name: String,
-    surname: String,
-    email: String,
-    role: String,
-    uuid: String,
-    password: String,
-    focusManager: FocusManager,
-    typingJob: Job?
+  context: Context,
+  authManager: AuthManager,
+  pagesViewModel: PagesViewModel,
+  name: String,
+  surname: String,
+  email: String,
+  role: String,
+  uuid: String,
+  password: String,
+  focusManager: FocusManager,
+  typingJob: Job?
 ) {
-    try {
-        DatabaseRepositoryImpl(
-            database = Firebase, context = context
-        ).addAdminToDatabase(
-            Admin(
-                name = name,
-                surname = surname,
-                email = email,
-                role = role,
-                uuid = uuid,
-                listOfPatients = emptyList()
-            )
-        )
-        authManager.register(
-            email = email, password = password
-        )
-    } catch (e: Exception) {
-        println(e.toString())
-    }
-    pagesViewModel.clearFields()
-    typingJob?.cancel()
-    focusManager.clearFocus()
+  try {
+    DatabaseRepositoryImpl(
+      database = Firebase, context = context
+    ).addAdminToDatabase(
+      Admin(
+        name = name,
+        surname = surname,
+        email = email,
+        role = role,
+        uuid = uuid,
+        listOfPatients = emptyList()
+      )
+    )
+    authManager.register(
+      email = email, password = password
+    )
+  } catch (e: Exception) {
+    println(e.toString())
+  }
+  pagesViewModel.clearFields()
+  typingJob?.cancel()
+  focusManager.clearFocus()
 }
 
 
 @Composable
 fun CustomTextFieldName(name: String, onValueChangeName: (String) -> Unit) {
-    CustomTextField(
-        value = name,
-        onValueChange = onValueChangeName,
-        label = {
-            Text(text = ("NAME"), letterSpacing = 1.sp)
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-    )
+  CustomTextField(
+    value = name,
+    onValueChange = onValueChangeName,
+    label = {
+      Text(text = ("NAME"), letterSpacing = 1.sp)
+    },
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+  )
 }
 
 @Composable
 fun CustomTextFieldSurname(surname: String, onValueChangeSurname: (String) -> Unit) {
-    CustomTextField(
-        value = surname,
-        onValueChange = onValueChangeSurname,
-        label = {
-            Text(text = ("SURNAME"), letterSpacing = 1.sp)
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-    )
+  CustomTextField(
+    value = surname,
+    onValueChange = onValueChangeSurname,
+    label = {
+      Text(text = ("SURNAME"), letterSpacing = 1.sp)
+    },
+    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+  )
 }
 
 @Composable
 fun ShowDropMenu(isFold: Boolean, onRoleSelected: (String) -> Unit) {
-    DropdownMenu(
-        expanded = isFold,
-        onDismissRequest = { !isFold },
-        modifier = Modifier
-            .width(100.dp)
-            .height(100.dp)
-    ) {
-        DropdownMenuItem(text = { Text("Admin") }, onClick = {
-            onRoleSelected("Admin")
-        })
-        DropdownMenuItem(text = { Text("Patient") }, onClick = {
-            onRoleSelected("Patient")
+  DropdownMenu(
+    expanded = isFold,
+    onDismissRequest = { !isFold },
+    modifier = Modifier
+      .width(100.dp)
+      .height(100.dp)
+  ) {
+    DropdownMenuItem(text = { Text("Admin") }, onClick = {
+      onRoleSelected("Admin")
+    })
+    DropdownMenuItem(text = { Text("Patient") }, onClick = {
+      onRoleSelected("Patient")
 
-        })
-    }
+    })
+  }
 }
 
 @Composable
 fun ShowDropMenuForDietitian(
-    isFoldAdmin: Boolean,
-    onRoleSelected: (String) -> Unit,
+  isFoldAdmin: Boolean,
+  onRoleSelected: (String) -> Unit,
 ) {
-    val adminUsernames = remember { mutableStateListOf<String>() }
-    val coroutineScope = rememberCoroutineScope()
+  val adminUsernames = remember { mutableStateListOf<String>() }
+  val coroutineScope = rememberCoroutineScope()
 
-    DropdownMenu(
-        expanded = isFoldAdmin,
-        onDismissRequest = { !isFoldAdmin },
-        modifier = Modifier
-            .width(100.dp)
-            .height(100.dp)
-    ) {
-        coroutineScope.launch {
-            try {
-                val documents = Firebase.firestore.collection("users").get().await()
+  DropdownMenu(
+    expanded = isFoldAdmin,
+    onDismissRequest = { !isFoldAdmin },
+    modifier = Modifier
+      .width(100.dp)
+      .height(100.dp)
+  ) {
+    coroutineScope.launch {
+      try {
+        val documents = Firebase.firestore.collection("users").get().await()
 
-                adminUsernames.clear()
+        adminUsernames.clear()
 
-                for (document in documents) {
-                    val userData = document.data
-                    val role = userData["role"].toString()
-                    val name = userData["name"].toString()
+        for (document in documents) {
+          val userData = document.data
+          val role = userData["role"].toString()
+          val name = userData["name"].toString()
 
-                    if (role == "Admin") {
-                        adminUsernames.add(name)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("ShowDropMenuForDietitian", "Error fetching user data", e)
-            }
+          if (role == "Admin") {
+            adminUsernames.add(name)
+          }
         }
-
-        for (username in adminUsernames) {
-            DropdownMenuItem(text = { Text(username) }, onClick = {
-                onRoleSelected(username)
-            })
-        }
+      } catch (e: Exception) {
+        Log.e("ShowDropMenuForDietitian", "Error fetching user data", e)
+      }
     }
+
+    for (username in adminUsernames) {
+      DropdownMenuItem(text = { Text(username) }, onClick = {
+        onRoleSelected(username)
+      })
+    }
+  }
 }
 
 fun generateRandom(): String {
-    val usedIds = mutableSetOf<String>()
-    var letterUUID: String
-    do {
-        val standardUUID = UUID.randomUUID()
+  val usedIds = mutableSetOf<String>()
+  var letterUUID: String
+  do {
+    val standardUUID = UUID.randomUUID()
 
-        val hexString = standardUUID.toString().replace("-", "").substring(0, 15)
+    val hexString = standardUUID.toString().replace("-", "").substring(0, 15)
 
-        letterUUID = hexString
-    } while (!usedIds.add(letterUUID))
+    letterUUID = hexString
+  } while (!usedIds.add(letterUUID))
 
-    return letterUUID
+  return letterUUID
 }
 
 

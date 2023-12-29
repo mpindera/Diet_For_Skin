@@ -38,12 +38,12 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
                                 val userData = document.data
                                 val role = userData["role"].toString()
                                 val userEmail = userData["email"].toString()
-                                val username = userData["username"].toString()
+                                val name = userData["name"].toString()
 
                                 if (userEmail == email) {
                                     check(
                                         role = role,
-                                        username = username,
+                                        name = name,
                                         profileViewModel = profileViewModel,
                                         context = context
                                     )
@@ -141,19 +141,30 @@ class AuthManager(private val authRepository: AuthRepository, private val contex
         return email.isNotEmpty()
     }
 
-    fun checkingAllFields(username: String, email: String, role: String, uuid: String): Boolean {
-        return username.isNotEmpty() && email.isNotEmpty() && role != "ROLE" && uuid.isNotEmpty()
+    fun checkingAllFields(
+        name: String,
+        surname: String,
+        email: String,
+        role: String,
+        uuid: String
+    ): Boolean {
+        return name.isNotEmpty() && surname.isNotEmpty() && email.isNotEmpty() && role != "ROLE" && uuid.isNotEmpty()
     }
 
 }
 
-fun check(role: String, profileViewModel: ProfileViewModel, context: Context, username: String) {
+fun check(
+    role: String,
+    profileViewModel: ProfileViewModel,
+    context: Context,
+    name: String,
+) {
     if (role == "Patient") {
-        Reports(context).loggedSuccess(username = username)
+        Reports(context).loggedSuccess(name = name)
         profileViewModel.updateSelection(PagesToRoles.PATIENT_LOGGED)
     }
     if (role == "Admin") {
-        Reports(context).loggedSuccess(username = username)
+        Reports(context).loggedSuccess(name = name)
         profileViewModel.updateSelection(PagesToRoles.ADMIN_LOGGED)
     }
 }

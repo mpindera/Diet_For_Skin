@@ -2,13 +2,14 @@
     <string name="app_name">Diet for skin</string>
     <string name="create">CREATE</string>
     <string name="upload_PDF_File">Upload PDF file</string>
+    <string name="add_PDF_File_to_database">Add PDF to database</string>
     <string name="reset_Password">Reset password</string>
     <string name="login_in">LOGIN IN</string>
     <string name="password">PASSWORD</string>
     <string name="profile">PROFILE</string>
     <string name="back_to_login">Back to login</string>
     <string name="create_account">CREATE ACCOUNT</string>
-    <string name="username">USERNAME</string>
+    <string name="name">NAME</string>
     <string name="email">EMAIL</string>
     <string name="log_out">LOGOUT</string>
     <string name="log_out_text">Are you sure you want to logout?</string>

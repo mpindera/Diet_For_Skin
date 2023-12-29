@@ -26,12 +26,19 @@ import com.example.dietforskin.viewmodels.PagesViewModel
 
 @Composable
 fun CreateAccountPatient(pagesViewModel: PagesViewModel) {
-    val username by pagesViewModel.username.collectAsState()
+    val name by pagesViewModel.name.collectAsState()
+    val surname by pagesViewModel.surname.collectAsState()
     val email by pagesViewModel.email.collectAsState()
 
     Column {
-        CustomTextFieldUsername(
-            username = username, onValueChangeUsername = pagesViewModel::onUsernameChanged
+        CustomTextFieldName(
+            name = name, onValueChangeName = pagesViewModel::onNameChanged
+        )
+
+        Spacer(modifier = Modifier.padding(12.dp))
+
+        CustomTextFieldSurname(
+            surname = surname, onValueChangeSurname = pagesViewModel::onSurnameChanged
         )
 
         Spacer(modifier = Modifier.padding(12.dp))
@@ -42,8 +49,9 @@ fun CreateAccountPatient(pagesViewModel: PagesViewModel) {
     }
 
 }
+
 @Composable
-fun CreateAccountPatientChooseDietitian(pagesViewModel: PagesViewModel, dietitian: String){
+fun CreateAccountPatientChooseDietitian(pagesViewModel: PagesViewModel, dietitian: String) {
     var isFoldAdmin by remember {
         mutableStateOf(false)
     }

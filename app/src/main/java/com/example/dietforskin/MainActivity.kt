@@ -42,6 +42,7 @@ import com.example.dietforskin.viewmodels.ChatViewModel
 import com.example.dietforskin.viewmodels.FavoritePostsViewModel
 import com.example.dietforskin.viewmodels.MainViewModel
 import com.example.dietforskin.viewmodels.ProfileViewModel
+import com.example.dietforskin.viewmodels.UpdatePatientInformationViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -52,6 +53,7 @@ class MainActivity : ComponentActivity() {
     private val profileViewModel by viewModels<ProfileViewModel>()
     private val animatedSplashScreenViewModel by viewModels<AnimatedSplashScreenViewModel>()
     private val favoritePostsViewModel by viewModels<FavoritePostsViewModel>()
+    private val updatePatientInformationViewModel by viewModels<UpdatePatientInformationViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -161,7 +163,8 @@ class MainActivity : ComponentActivity() {
                             composable(Screen.PatientInformation.route) {
                                 UpdatePatientInformation(
                                     profileViewModel = profileViewModel,
-                                    context = context
+                                    context = context,
+                                    updatePatientInformationViewModel=updatePatientInformationViewModel
                                 )
                             }
                         }

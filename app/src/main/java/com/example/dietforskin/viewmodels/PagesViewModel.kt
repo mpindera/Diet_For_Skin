@@ -9,11 +9,18 @@ import kotlinx.coroutines.flow.StateFlow
 class PagesViewModel : ViewModel() {
     /** Username section in Create Account **/
 
-    private var _username = MutableStateFlow("")
-    val username: StateFlow<String> = _username
+    private var _name = MutableStateFlow("")
+    val name: StateFlow<String> = _name
 
-    fun onUsernameChanged(username: String) {
-        _username.value = username
+    fun onNameChanged(name: String) {
+        _name.value = name
+    }
+
+    private var _surname = MutableStateFlow("")
+    val surname: StateFlow<String> = _surname
+
+    fun onSurnameChanged(surname: String) {
+        _surname.value = surname
     }
 
     private var _selectedRole = MutableStateFlow("ROLE")
@@ -59,15 +66,9 @@ class PagesViewModel : ViewModel() {
         _password.value = password
     }
 
-    private var _passwordAdmin = MutableStateFlow("")
-    val passwordAdmin: StateFlow<String> = _passwordAdmin
-
-    fun onPasswordAdminChanged(passwordAdmin: String) {
-        _passwordAdmin.value = passwordAdmin
-    }
-
     fun clearFields() {
-        _username.value = ""
+        _name.value = ""
+        _surname.value = ""
         _email.value = ""
         _password.value = ""
         _selectedRole.value = "ROLE"

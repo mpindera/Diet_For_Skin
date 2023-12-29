@@ -84,7 +84,7 @@ fun previewCreateAccount() {
                             value = username,
                             onValueChange = { username = it },
                             label = {
-                                Text(text = stringResource(id = R.string.username), letterSpacing = 1.sp)
+                                Text(text = stringResource(id = R.string.name), letterSpacing = 1.sp)
                             },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                         )

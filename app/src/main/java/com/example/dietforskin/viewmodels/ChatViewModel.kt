@@ -63,11 +63,19 @@ class ChatViewModel : ViewModel() {
                     val userData = document.data
                     val role = userData["role"].toString()
                     val userEmail = userData["email"].toString()
-                    val username = userData["username"].toString()
+                    val name = userData["name"].toString()
+                    val surname = userData["surname"].toString()
                     val uuid = userData["uuid"].toString()
                     val patientList = userData["listOfPatients"] as? ArrayList<*>
 
-                    addPatient(Patient(username = username, email = userEmail, uuid = uuid))
+                    addPatient(
+                        Patient(
+                            name = name,
+                            surname = surname,
+                            email = userEmail,
+                            uuid = uuid
+                        )
+                    )
 
                     if (userEmail == mAuthCurrentAdminEmail && role == "Admin") {
                         if (patientList != null) {
@@ -79,7 +87,7 @@ class ChatViewModel : ViewModel() {
                     for (i in arrayOfList) {
                         for (j in patients) {
                             if (i.contains(j.uuid)) {
-                                addAllPatient(Patient(j.username, j.email, j.uuid))
+                                addAllPatient(Patient(j.name, j.surname, j.email, j.uuid))
                             }
                         }
                     }

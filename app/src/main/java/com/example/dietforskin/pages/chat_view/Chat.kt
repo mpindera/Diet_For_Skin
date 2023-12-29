@@ -17,9 +17,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -91,13 +93,13 @@ fun Chat(
                                 }
                             }
                         }
-
-                        Text(
-                            text = it.username, modifier = Modifier
-                                .align(TopStart)
-                                .padding(5.dp)
-                        )
-
+                        Row {
+                            Text(
+                                text = "${it.name} ${it.surname}", modifier = Modifier
+                                    .align(Top)
+                                    .padding(5.dp)
+                            )
+                        }
                         Text(
                             text = it.email,
                             fontSize = 10.sp,

@@ -12,8 +12,8 @@ class Reports(val context: Context) {
     }
 
     /** Login **/
-    fun loggedSuccess(username: String) {
-        Toast.makeText(context, "Hello, $username.", Toast.LENGTH_SHORT).show()
+    fun loggedSuccess(name: String) {
+        Toast.makeText(context, "Hello, $name.", Toast.LENGTH_SHORT).show()
     }
 
     /** Register **/

@@ -65,15 +65,14 @@ fun CreateAccount(
 ) {
 
     val pagesViewModel = remember { PagesViewModel() }
-    val username by pagesViewModel.username.collectAsState()
+    val name by pagesViewModel.name.collectAsState()
+    val surname by pagesViewModel.surname.collectAsState()
     val email by pagesViewModel.email.collectAsState()
     val role by pagesViewModel.selectedRole.collectAsState()
     val dietitian by pagesViewModel.selectedDietitian.collectAsState()
     val checkIfPatient = pagesViewModel.selectedRole.value == "Patient"
     val checkIfAdmin = pagesViewModel.selectedRole.value == "Admin"
     val visibility by pagesViewModel.visibilityOfAnimation.collectAsState()
-    val passwordAdmin by pagesViewModel.passwordAdmin.collectAsState()
-
 
     val authRepository: AuthRepository =
         AuthRepositoryImpl(firebaseAuth = FirebaseAuth.getInstance(), context = context)
@@ -82,8 +81,10 @@ fun CreateAccount(
 
     val focusManager = LocalFocusManager.current
     val typingJob by remember { mutableStateOf<Job?>(null) }
+
     val generatedPassword = generateRandom()
     pagesViewModel.onPasswordChanged(generatedPassword)
+
     val uuid = UUID.randomUUID().toString()
 
     if (checkIfAdmin || checkIfPatient) {
@@ -126,7 +127,8 @@ fun CreateAccount(
 
                 CreateAccountButton(
                     authManager = authManager,
-                    username = username,
+                    name = name,
+                    surname = surname,
                     email = email,
                     role = role,
                     uuid = uuid,
@@ -135,7 +137,6 @@ fun CreateAccount(
                     pagesViewModel = pagesViewModel,
                     dietitian = dietitian,
                     generatedPassword = generatedPassword,
-                    passwordAdmin = passwordAdmin,
                     focusManager = focusManager,
                     typingJob = typingJob,
                     checkIfAdmin = checkIfAdmin
@@ -171,7 +172,8 @@ suspend fun addCreatedAccountToDatabase(
     context: Context,
     authManager: AuthManager,
     pagesViewModel: PagesViewModel,
-    username: String,
+    name: String,
+    surname: String,
     email: String,
     role: String,
     uuid: String,
@@ -184,7 +186,12 @@ suspend fun addCreatedAccountToDatabase(
         database = Firebase, context = context
     ).addPersonToDatabase(
         Person(
-            username = username, email = email, role = role, uuid = uuid, dietitian = dietitian
+            name = name,
+            surname = surname,
+            email = email,
+            role = role,
+            uuid = uuid,
+            dietitian = dietitian
         )
     )
     authManager.register(
@@ -199,7 +206,8 @@ suspend fun addCreatedAdminToDatabase(
     context: Context,
     authManager: AuthManager,
     pagesViewModel: PagesViewModel,
-    username: String,
+    name: String,
+    surname: String,
     email: String,
     role: String,
     uuid: String,
@@ -207,62 +215,54 @@ suspend fun addCreatedAdminToDatabase(
     focusManager: FocusManager,
     typingJob: Job?
 ) {
-    if (checkPassword(password = password)) {
-        try {
-            DatabaseRepositoryImpl(
-                database = Firebase, context = context
-            ).addAdminToDatabase(
-                Admin(
-                    username = username,
-                    email = email,
-                    role = role,
-                    uuid = uuid,
-                    listOfPatients = emptyList()
-                )
+    try {
+        DatabaseRepositoryImpl(
+            database = Firebase, context = context
+        ).addAdminToDatabase(
+            Admin(
+                name = name,
+                surname = surname,
+                email = email,
+                role = role,
+                uuid = uuid,
+                listOfPatients = emptyList()
             )
-            authManager.register(
-                email = email, password = password
-            )
-        } catch (e: Exception) {
-            println(e.toString())
-        }
-        pagesViewModel.clearFields()
-        typingJob?.cancel()
-        focusManager.clearFocus()
-    } else {
-        Reports(context).errorPasswordInvalid()
+        )
+        authManager.register(
+            email = email, password = password
+        )
+    } catch (e: Exception) {
+        println(e.toString())
     }
+    pagesViewModel.clearFields()
+    typingJob?.cancel()
+    focusManager.clearFocus()
 }
 
-private fun checkPassword(password: String): Boolean {
-    val regex = Regex("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*!]).{6}$")
-    return regex.matches(password)
-}
 
 @Composable
-fun CustomTextFieldUsername(username: String, onValueChangeUsername: (String) -> Unit) {
+fun CustomTextFieldName(name: String, onValueChangeName: (String) -> Unit) {
     CustomTextField(
-        value = username,
-        onValueChange = onValueChangeUsername,
+        value = name,
+        onValueChange = onValueChangeName,
         label = {
-            Text(text = ("USERNAME"), letterSpacing = 1.sp)
+            Text(text = ("NAME"), letterSpacing = 1.sp)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     )
 }
 
 @Composable
-fun CustomTextFieldPassword(passwordAdmin: String, onValueChangePasswordAdmin: (String) -> Unit) {
+fun CustomTextFieldSurname(surname: String, onValueChangeSurname: (String) -> Unit) {
     CustomTextField(
-        value = passwordAdmin,
-        onValueChange = onValueChangePasswordAdmin,
+        value = surname,
+        onValueChange = onValueChangeSurname,
         label = {
-            Text(text = ("PASSWORD"), letterSpacing = 1.sp)
+            Text(text = ("SURNAME"), letterSpacing = 1.sp)
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
     )
 }
-
 
 @Composable
 fun ShowDropMenu(isFold: Boolean, onRoleSelected: (String) -> Unit) {
@@ -307,10 +307,10 @@ fun ShowDropMenuForDietitian(
                 for (document in documents) {
                     val userData = document.data
                     val role = userData["role"].toString()
-                    val username = userData["username"].toString()
+                    val name = userData["name"].toString()
 
                     if (role == "Admin") {
-                        adminUsernames.add(username)
+                        adminUsernames.add(name)
                     }
                 }
             } catch (e: Exception) {

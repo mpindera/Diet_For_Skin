@@ -32,7 +32,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateAccountButton(
     authManager: AuthManager,
-    username: String,
+    name: String,
+    surname: String,
     email: String,
     role: String,
     uuid: String,
@@ -44,7 +45,6 @@ fun CreateAccountButton(
     focusManager: FocusManager,
     typingJob: Job?,
     checkIfAdmin: Boolean,
-    passwordAdmin: String
 ) {
     var isFold by remember {
         mutableStateOf(false)
@@ -60,7 +60,7 @@ fun CreateAccountButton(
             modifier = Modifier
                 .padding(top = 20.dp)
                 .align(Alignment.BottomEnd),
-            enabled = authManager.checkingAllFields(username, email, role, uuid),
+            enabled = authManager.checkingAllFields(name, surname, email, role, uuid),
             onClick = {
                 if (checkIfAdmin) {
                     coroutineScope.launch {
@@ -68,11 +68,12 @@ fun CreateAccountButton(
                             context = context,
                             authManager = authManager,
                             pagesViewModel = pagesViewModel,
-                            username = username,
+                            name = name,
+                            surname = surname,
                             email = email,
                             role = role,
                             uuid = uuid,
-                            password = passwordAdmin,
+                            password = generatedPassword,
                             focusManager = focusManager,
                             typingJob = typingJob
                         )
@@ -86,7 +87,8 @@ fun CreateAccountButton(
                             context = context,
                             authManager = authManager,
                             pagesViewModel = pagesViewModel,
-                            username = username,
+                            name = name,
+                            surname = surname,
                             email = email,
                             role = role,
                             uuid = uuid,

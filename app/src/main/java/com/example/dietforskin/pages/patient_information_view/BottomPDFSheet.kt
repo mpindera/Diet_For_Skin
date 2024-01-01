@@ -113,7 +113,7 @@ fun BottomSheetContent(
     items(pdfList) { pdf ->
       Column {
         Text(modifier = Modifier.padding(30.dp), text = pdf)
-        Divider()
+
       }
     }
   }

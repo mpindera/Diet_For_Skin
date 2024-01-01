@@ -27,10 +27,12 @@ import com.example.dietforskin.ui.theme.colorPinkMain
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
 
 class CommonElements {
     val db = Firebase.firestore
     val mAuth = FirebaseAuth.getInstance()
+    val storage = Firebase.storage.reference
 
     @Composable
     fun canvasWithName(label: String) {

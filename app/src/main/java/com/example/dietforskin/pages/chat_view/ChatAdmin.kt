@@ -54,7 +54,11 @@ fun ChatAdmin(chatViewModel: ChatViewModel, navController: NavHostController) {
                     route = Screen.PatientInformation.route.replace(
                       "{uuid}", it.uuid
                     )
-                  )
+                  ){
+                    popUpTo(Screen.PatientInformation.route){
+                      inclusive = true
+                    }
+                  }
                 }) {
                   Icon(
                     painter = painterResource(id = R.drawable.baseline_edit_24),

@@ -41,7 +41,7 @@ fun Chat(
   profileViewModel: ProfileViewModel
 ) {
   profileViewModel.updateSelectionOfPagesSite(PagesSite.CHAT_VIEW)
-  chatViewModel.checkIfAdminOrPatient()
+  chatViewModel.checkIfAdminOrPatient(navController)
 }
 
 

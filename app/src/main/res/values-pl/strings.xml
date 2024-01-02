@@ -28,5 +28,8 @@
     <string name="pdf_uploaded_successfully">Plik PDF został przesłany pomyślnie</string>
     <string name="pdf_upload_failed">Przesyłanie pliku PDF nie powiodło się</string>
     <string name="list_of_PDF_File">Lista plików PDF</string>
+    <string name="dietitian">Dietetyk</string>
+    <string name="files">Pliki</string>
+    <string name="chat">Czat</string>
 
 </resources>

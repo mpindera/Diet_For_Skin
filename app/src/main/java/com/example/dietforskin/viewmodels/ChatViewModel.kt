@@ -10,103 +10,154 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
+import com.example.dietforskin.data.profile.person.Admin
 import com.example.dietforskin.data.profile.person.Patient
 import com.example.dietforskin.pages.CommonElements
+import com.example.dietforskin.pages.chat_view.ChatAdmin
+import com.example.dietforskin.pages.chat_view.ChatPatient
 import com.example.dietforskin.ui.theme.colorOfBorder
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 
 class ChatViewModel : ViewModel() {
 
-    private val _patients = mutableStateListOf<Patient>()
-    val patients: List<Patient> get() = _patients
+  private val _patients = mutableStateListOf<Patient>()
+  val patients: List<Patient> get() = _patients
 
 
-    private val _patientsAll = mutableStateListOf<Patient>()
-    val patientsAll: List<Patient> get() = _patientsAll
+  private val _patientsAll = mutableStateListOf<Patient>()
+  val patientsAll: List<Patient> get() = _patientsAll
 
-    private fun addPatient(patient: Patient) {
-        if (!_patients.contains(patient)) {
-            _patients.add(patient)
-        }
+  private fun addPatient(patient: Patient) {
+    if (!_patients.contains(patient)) {
+      _patients.add(patient)
     }
+  }
 
-    private fun addAllPatient(patient: Patient) {
-        if (!_patientsAll.contains(patient)) {
-            _patientsAll.add(patient)
-        }
+  private fun addAllPatient(patient: Patient) {
+    if (!_patientsAll.contains(patient)) {
+      _patientsAll.add(patient)
     }
+  }
 
-    var showListOfPatients by mutableStateOf(false)
-        private set
+  var showListOfPatients by mutableStateOf(false)
+    private set
 
-    fun onListOfPatientsChanged(showListOfPatients: Boolean) {
-        this.showListOfPatients = showListOfPatients
-    }
+  fun onListOfPatientsChanged(showListOfPatients: Boolean) {
+    this.showListOfPatients = showListOfPatients
+  }
 
+  //---//
 
-    @Composable
-    fun GetPatientsFromDatabaseToDirectDietitian() {
+  private var _personRole = MutableStateFlow("")
+  val personRole: StateFlow<String> = _personRole
 
-        LaunchedEffect(Unit) {
-            val documents = CommonElements().db.collection("users").get().await()
-            val mAuthCurrentAdminEmail = CommonElements().mAuth.currentUser?.email
+  fun onPersonRoleChanged(personRole: String) {
+    _personRole.value = personRole
+  }
 
-            val arrayOfList: ArrayList<String> = arrayListOf()
-            try {
-                for (document in documents) {
-                    val userData = document.data
-                    val role = userData["role"].toString()
-                    val userEmail = userData["email"].toString()
-                    val name = userData["name"].toString()
-                    val surname = userData["surname"].toString()
-                    val uuid = userData["uuid"].toString()
-                    val patientList = userData["listOfPatients"] as? ArrayList<*>
+  @Composable
+  fun GetPatientsFromDatabaseToDirectDietitian() {
 
-                    addPatient(
-                        Patient(
-                            name = name,
-                            surname = surname,
-                            email = userEmail,
-                            uuid = uuid
-                        )
-                    )
+    LaunchedEffect(Unit) {
+      val mAuthCurrentAdminEmail = CommonElements().mAuth?.email
 
-                    if (userEmail == mAuthCurrentAdminEmail && role == "Admin") {
-                        if (patientList != null) {
-                            for (i in patientList) {
-                                arrayOfList.add(i.toString())
-                            }
-                        }
-                    }
-                    for (i in arrayOfList) {
-                        for (j in patients) {
-                            if (i.contains(j.uuid)) {
-                                addAllPatient(Patient(j.name, j.surname, j.email, j.uuid))
-                            }
-                        }
-                    }
-                }
-                onListOfPatientsChanged(true)
-            } catch (e: Exception) {
-                Log.e("Error Fetching", "Error fetching user data", e)
+      val arrayOfList: ArrayList<String> = arrayListOf()
+      try {
+        for (document in CommonElements().dbGet.await()) {
+          val userData = document.data
+          val role = userData["role"].toString()
+          val userEmail = userData["email"].toString()
+          val name = userData["name"].toString()
+          val surname = userData["surname"].toString()
+          val uuid = userData["uuid"].toString()
+          val patientList = userData["listOfPatients"] as? ArrayList<*>
+
+          addPatient(
+            Patient(
+              name = name, surname = surname, email = userEmail, uuid = uuid
+            )
+          )
+          if (userEmail == mAuthCurrentAdminEmail && role == "Admin") {
+            if (patientList != null) {
+              for (i in patientList) {
+                arrayOfList.add(i.toString())
+              }
             }
+          }
+          for (i in arrayOfList) {
+            for (j in patients) {
+              if (i.contains(j.uuid)) {
+                addAllPatient(Patient(j.name, j.surname, j.email, j.uuid))
+              }
+            }
+          }
         }
+        onListOfPatientsChanged(true)
+      } catch (e: Exception) {
+        Log.e("Error Fetching", "Error fetching user data", e)
+      }
     }
+  }
 
-    @Composable
-    fun DividerInChat() {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(1.dp)
-                .background(colorOfBorder)
-                .padding(5.dp)
-        )
+  @Composable
+  fun checkIfAdminOrPatient() {
+    var isOperationComplete by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+      val mAuthCurrentAdminEmail = CommonElements().mAuth?.email
+
+      try {
+        for (document in CommonElements().dbGet.await()) {
+          val userData = document.data
+          val userEmail = userData["email"].toString()
+          val role = userData["role"].toString()
+
+          if (userEmail == mAuthCurrentAdminEmail && role == "Admin") {
+            onPersonRoleChanged("Admin")
+          }
+
+          if (userEmail == mAuthCurrentAdminEmail && role == "Patient") {
+            onPersonRoleChanged("Patient")
+          }
+        }
+      } catch (e: Exception) {
+        Log.e("Error Fetching", "Error fetching user data", e)
+      } finally {
+        isOperationComplete = true
+      }
     }
+    if (isOperationComplete) {
+      when (personRole.value) {
+        "Admin" -> {
+          ChatAdmin(this, NavHostController(LocalContext.current))
+        }
+        "Patient" -> {
+          ChatPatient(this, NavHostController(LocalContext.current))
+        }
+      }
+    }
+  }
+
+  @Composable
+  fun DividerInChat() {
+    Box(
+      modifier = Modifier
+        .fillMaxHeight()
+        .width(1.dp)
+        .background(colorOfBorder)
+        .padding(5.dp)
+    )
+  }
 }

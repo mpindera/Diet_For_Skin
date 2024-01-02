@@ -17,9 +17,9 @@ import com.example.dietforskin.R
 import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AuthManager
+import com.example.dietforskin.viewmodels.PagesViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ForgotPasswordForm(
@@ -27,6 +27,7 @@ fun ForgotPasswordForm(
     authManager: AuthManager,
     onValueChangeEmail: (String) -> Unit,
     coroutineScope: CoroutineScope,
+    pagesViewModel: PagesViewModel,
     backToLoginText: @Composable () -> Unit,
 ) {
     Column(modifier = Modifier.padding(15.dp)) {
@@ -43,6 +44,7 @@ fun ForgotPasswordForm(
             onClick = {
                 coroutineScope.launch  {
                     authManager.resetPasswordPatient(email = email)
+                    pagesViewModel.clearFieldsOfForgotPassword()
                 }
             }, shape = RoundedCornerShape(0.dp), colors = ButtonDefaults.buttonColors(
                 containerColor = colorTextFieldsAndButton, contentColor = Color.Black

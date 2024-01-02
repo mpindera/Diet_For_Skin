@@ -59,7 +59,7 @@ fun CreateAccountPatient(pagesViewModel: PagesViewModel) {
 @Composable
 fun CreateAccountPatientChooseDietitian(pagesViewModel: PagesViewModel, dietitian: String) {
   val coroutineScope = rememberCoroutineScope()
-  val currentUser = CommonElements().mAuth.currentUser?.email
+  val currentUser = CommonElements().mAuth?.email
 
   Box(modifier = Modifier.fillMaxWidth()) {
     ElevatedButton(

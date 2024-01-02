@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.dietforskin.pages.CommonElements
@@ -71,7 +72,7 @@ fun CreateAccountPatientChooseDietitian(pagesViewModel: PagesViewModel, dietitia
         containerColor = colorTextFieldsAndButton, contentColor = Color.Black
       ), elevation = ButtonDefaults.elevatedButtonElevation(15.dp)
     ) {
-      Text(text = dietitian, letterSpacing = 1.sp)
+      Text(text = dietitian.replace(" ", "\n"), letterSpacing = 1.sp, fontSize = 13.sp, textAlign = TextAlign.Center)
     }
     Column(
       modifier = Modifier
@@ -88,10 +89,11 @@ fun CreateAccountPatientChooseDietitian(pagesViewModel: PagesViewModel, dietitia
             val userData = document.data
             val role = userData["role"].toString()
             val name = userData["name"].toString()
+            val surname = userData["surname"].toString()
             val email = userData["email"].toString()
 
-            if (role == "Admin" && currentUser == email) {
-              pagesViewModel.onSelectedDietitianChanged(name)
+            if (role == CommonElements().admin && currentUser == email) {
+              pagesViewModel.onSelectedDietitianChanged("$name $surname")
             }
           }
         } catch (e: Exception) {

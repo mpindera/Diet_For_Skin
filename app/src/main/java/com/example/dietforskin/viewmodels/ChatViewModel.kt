@@ -33,7 +33,7 @@ import kotlinx.coroutines.tasks.await
 class ChatViewModel : ViewModel() {
 
   private val _patients = mutableStateListOf<Patient>()
-  val patients: List<Patient> get() = _patients
+  private val patients: List<Patient> get() = _patients
 
 
   private val _patientsAll = mutableStateListOf<Patient>()
@@ -63,7 +63,7 @@ class ChatViewModel : ViewModel() {
   private var _personRole = MutableStateFlow("")
   val personRole: StateFlow<String> = _personRole
 
-  fun onPersonRoleChanged(personRole: String) {
+  private fun onPersonRoleChanged(personRole: String) {
     _personRole.value = personRole
   }
 
@@ -89,7 +89,7 @@ class ChatViewModel : ViewModel() {
               name = name, surname = surname, email = userEmail, uuid = uuid
             )
           )
-          if (userEmail == mAuthCurrentAdminEmail && role == "Admin") {
+          if (userEmail == mAuthCurrentAdminEmail && role == CommonElements().admin) {
             if (patientList != null) {
               for (i in patientList) {
                 arrayOfList.add(i.toString())
@@ -124,12 +124,12 @@ class ChatViewModel : ViewModel() {
           val userEmail = userData["email"].toString()
           val role = userData["role"].toString()
 
-          if (userEmail == mAuthCurrentAdminEmail && role == "Admin") {
-            onPersonRoleChanged("Admin")
+          if (userEmail == mAuthCurrentAdminEmail && role == CommonElements().admin) {
+            onPersonRoleChanged(CommonElements().admin)
           }
 
-          if (userEmail == mAuthCurrentAdminEmail && role == "Patient") {
-            onPersonRoleChanged("Patient")
+          if (userEmail == mAuthCurrentAdminEmail && role == CommonElements().patient) {
+            onPersonRoleChanged(CommonElements().patient)
           }
         }
       } catch (e: Exception) {
@@ -140,16 +140,41 @@ class ChatViewModel : ViewModel() {
     }
     if (isOperationComplete) {
       when (personRole.value) {
-        "Admin" -> {
+        CommonElements().admin -> {
           ChatAdmin(this, NavHostController(LocalContext.current))
         }
-        "Patient" -> {
+        CommonElements().patient -> {
           ChatPatient(this, NavHostController(LocalContext.current))
         }
       }
     }
   }
 
+  @Composable
+  fun GetDietitianFromDatabaseToDirectPatient() {
+
+    LaunchedEffect(Unit) {
+      val mAuthCurrentAdminEmail = CommonElements().mAuth?.email
+
+      try {
+        for (document in CommonElements().dbGet.await()) {
+          val userData = document.data
+          val role = userData["role"].toString()
+          val userEmail = userData["email"].toString()
+          val name = userData["name"].toString()
+          val surname = userData["surname"].toString()
+          val uuid = userData["uuid"].toString()
+
+          if (userEmail == mAuthCurrentAdminEmail && role == CommonElements().patient) {
+
+          }
+
+        }
+      } catch (e: Exception) {
+        Log.e("Error Fetching", "Error fetching user data", e)
+      }
+    }
+  }
   @Composable
   fun DividerInChat() {
     Box(

@@ -34,6 +34,8 @@ class CommonElements {
   val dbDocument = Firebase.firestore.collection("users")
   val mAuth = FirebaseAuth.getInstance().currentUser
   val storage = Firebase.storage.reference
+  val admin = "Admin"
+  val patient = "Patient"
 
   @Composable
   fun canvasWithName(label: String) {

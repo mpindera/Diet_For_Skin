@@ -73,8 +73,8 @@ fun CreateAccount(
   val email by pagesViewModel.email.collectAsState()
   val role by pagesViewModel.selectedRole.collectAsState()
   val dietitian by pagesViewModel.selectedDietitian.collectAsState()
-  val checkIfPatient = pagesViewModel.selectedRole.value == "Patient"
-  val checkIfAdmin = pagesViewModel.selectedRole.value == "Admin"
+  val checkIfPatient = pagesViewModel.selectedRole.value == CommonElements().patient
+  val checkIfAdmin = pagesViewModel.selectedRole.value == CommonElements().admin
   val visibility by pagesViewModel.visibilityOfAnimation.collectAsState()
 
   val authRepository: AuthRepository =
@@ -121,13 +121,13 @@ fun CreateAccount(
           exit = fadeOut(animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing))
         ) {
           Crossfade(
-            targetState = if (checkIfAdmin) "Admin" else "Patient",
+            targetState = if (checkIfAdmin) CommonElements().admin else CommonElements().patient,
             label = "animationAccount",
             animationSpec = tween(durationMillis = 500, easing = FastOutLinearInEasing)
           ) { target ->
             when (target) {
-              "Admin" -> CreateAccountAdmin(pagesViewModel)
-              "Patient" -> CreateAccountPatient(pagesViewModel)
+              CommonElements().admin -> CreateAccountAdmin(pagesViewModel)
+              CommonElements().patient -> CreateAccountPatient(pagesViewModel)
             }
           }
         }
@@ -171,7 +171,7 @@ suspend fun addToDietitian(uuid: String) {
       val userAdmin = userData["role"].toString()
       val currentUserDocRef = CommonElements().dbDocument.document(document.id)
 
-      if (userEmail == mAuthCurrentAdminEmail && userAdmin == "Admin") {
+      if (userEmail == mAuthCurrentAdminEmail && userAdmin == CommonElements().admin) {
         currentUserDocRef.update("listOfPatients", FieldValue.arrayUnion(uuid))
 
       }
@@ -281,11 +281,11 @@ fun ShowDropMenu(isFold: Boolean, onRoleSelected: (String) -> Unit) {
       .width(100.dp)
       .height(100.dp)
   ) {
-    DropdownMenuItem(text = { Text("Admin") }, onClick = {
-      onRoleSelected("Admin")
+    DropdownMenuItem(text = { Text(CommonElements().admin) }, onClick = {
+      onRoleSelected(CommonElements().admin)
     })
-    DropdownMenuItem(text = { Text("Patient") }, onClick = {
-      onRoleSelected("Patient")
+    DropdownMenuItem(text = { Text(CommonElements().patient) }, onClick = {
+      onRoleSelected(CommonElements().patient)
 
     })
   }
@@ -317,7 +317,7 @@ fun ShowDropMenuForDietitian(
           val role = userData["role"].toString()
           val name = userData["name"].toString()
 
-          if (role == "Admin") {
+          if (role == CommonElements().admin) {
             adminUsernames.add(name)
           }
         }

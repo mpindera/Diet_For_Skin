@@ -154,11 +154,11 @@ fun check(
     context: Context,
     name: String,
 ) {
-    if (role == "Patient") {
+    if (role == CommonElements().patient) {
         Reports(context).loggedSuccess(name = name)
         profileViewModel.updateSelection(PagesToRoles.PATIENT_LOGGED)
     }
-    if (role == "Admin") {
+    if (role == CommonElements().admin) {
         Reports(context).loggedSuccess(name = name)
         profileViewModel.updateSelection(PagesToRoles.ADMIN_LOGGED)
     }

@@ -39,6 +39,15 @@ class ChatViewModel : ViewModel() {
   private val _patientsAll = mutableStateListOf<Patient>()
   val patientsAll: List<Patient> get() = _patientsAll
 
+
+  var dietitian by mutableStateOf("")
+    private set
+
+   fun addDietitian(dietitian: String) {
+    this.dietitian = dietitian
+  }
+
+
   private fun addPatient(patient: Patient) {
     if (!_patients.contains(patient)) {
       _patients.add(patient)
@@ -112,7 +121,7 @@ class ChatViewModel : ViewModel() {
   }
 
   @Composable
-  fun checkIfAdminOrPatient() {
+  fun checkIfAdminOrPatient(navController: NavHostController) {
     var isOperationComplete by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -141,10 +150,11 @@ class ChatViewModel : ViewModel() {
     if (isOperationComplete) {
       when (personRole.value) {
         CommonElements().admin -> {
-          ChatAdmin(this, NavHostController(LocalContext.current))
+          ChatAdmin(this, navController)
         }
+
         CommonElements().patient -> {
-          ChatPatient(this, NavHostController(LocalContext.current))
+          ChatPatient(this, navController)
         }
       }
     }
@@ -161,12 +171,10 @@ class ChatViewModel : ViewModel() {
           val userData = document.data
           val role = userData["role"].toString()
           val userEmail = userData["email"].toString()
-          val name = userData["name"].toString()
-          val surname = userData["surname"].toString()
-          val uuid = userData["uuid"].toString()
+          val dietitian = userData["dietitian"].toString()
 
           if (userEmail == mAuthCurrentAdminEmail && role == CommonElements().patient) {
-
+            addDietitian(dietitian)
           }
 
         }
@@ -175,6 +183,7 @@ class ChatViewModel : ViewModel() {
       }
     }
   }
+
   @Composable
   fun DividerInChat() {
     Box(

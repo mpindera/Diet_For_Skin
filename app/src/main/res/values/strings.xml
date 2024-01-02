@@ -27,5 +27,8 @@
     <string name="pdf_uploaded_successfully">PDF Uploaded Successfully</string>
     <string name="pdf_upload_failed">PDF Upload Failed</string>
     <string name="list_of_PDF_File">List of PDF File</string>
+    <string name="dietitian">Dietitian</string>
+    <string name="files">Files</string>
+    <string name="chat">Chat</string>
 
 </resources>

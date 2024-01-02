@@ -17,12 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Top
-import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -43,75 +41,7 @@ fun Chat(
   profileViewModel: ProfileViewModel
 ) {
   profileViewModel.updateSelectionOfPagesSite(PagesSite.CHAT_VIEW)
-  chatViewModel.GetPatientsFromDatabaseToDirectDietitian()
-
-  if (chatViewModel.showListOfPatients) {
-    LazyColumn {
-      items(chatViewModel.patientsAll) {
-        ElevatedCard(
-          modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(15.dp)
-            .border(1.dp, colorOfBorder, shape = RoundedCornerShape(12.dp))
-        ) {
-          Box(
-            modifier = Modifier.fillMaxSize()
-          ) {
-            Row(modifier = Modifier.align(CenterEnd)) {
-
-              chatViewModel.DividerInChat()
-
-              Box(modifier = Modifier.align(CenterVertically)) {
-
-                IconButton(onClick = {
-                  navController.navigate(route = Screen.PatientInformation.route.replace("{uuid}", it.uuid))
-                }) {
-                  Icon(
-                    painter = painterResource(id = R.drawable.baseline_edit_24),
-                    contentDescription = null,
-                    modifier = Modifier
-                      .width(20.dp)
-                      .height(20.dp)
-                  )
-                }
-              }
-
-              chatViewModel.DividerInChat()
-
-              Box(modifier = Modifier.align(CenterVertically)) {
-                IconButton(onClick = {
-
-                }) {
-                  Icon(
-                    painter = painterResource(id = R.drawable.baseline_message_24),
-                    contentDescription = null,
-                    modifier = Modifier
-                      .width(20.dp)
-                      .height(20.dp)
-                  )
-                }
-              }
-            }
-            Row {
-              Text(
-                text = "${it.name} ${it.surname}", modifier = Modifier
-                  .align(Top)
-                  .padding(5.dp)
-              )
-            }
-            Text(
-              text = it.email,
-              fontSize = 10.sp,
-              modifier = Modifier
-                .align(BottomStart)
-                .padding(5.dp)
-            )
-          }
-        }
-      }
-    }
-  }
+  chatViewModel.checkIfAdminOrPatient()
 }
 
 

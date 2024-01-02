@@ -164,13 +164,12 @@ fun CreateAccount(
 suspend fun addToDietitian(uuid: String) {
   val mAuthCurrentAdminEmail = FirebaseAuth.getInstance().currentUser?.email
 
-  val documents = CommonElements().db.collection("users").get().await()
   try {
-    for (document in documents) {
+    for (document in CommonElements().dbGet.await()) {
       val userData = document.data
       val userEmail = userData["email"].toString()
       val userAdmin = userData["role"].toString()
-      val currentUserDocRef = CommonElements().db.collection("users").document(document.id)
+      val currentUserDocRef = CommonElements().dbDocument.document(document.id)
 
       if (userEmail == mAuthCurrentAdminEmail && userAdmin == "Admin") {
         currentUserDocRef.update("listOfPatients", FieldValue.arrayUnion(uuid))

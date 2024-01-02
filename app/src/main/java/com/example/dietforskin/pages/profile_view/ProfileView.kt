@@ -6,11 +6,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -25,7 +22,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -38,7 +34,6 @@ import com.example.dietforskin.data.auth.AuthRepository
 import com.example.dietforskin.data.auth.AuthRepositoryImpl
 import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.pages.CommonElements
-import com.example.dietforskin.ui.theme.colorCircle
 import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
 import com.example.dietforskin.viewmodels.AuthManager
 import com.example.dietforskin.viewmodels.PagesViewModel
@@ -110,6 +105,7 @@ fun ProfileView(
                         authManager = authManager,
                         onValueChangeEmail = pagesViewModel::onEmailChanged,
                         coroutineScope = coroutineScope,
+                        pagesViewModel = pagesViewModel,
                         backToLoginText = {
                             Text(
                                 modifier = Modifier

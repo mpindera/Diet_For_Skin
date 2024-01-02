@@ -30,71 +30,72 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 
 class CommonElements {
-    val db = Firebase.firestore
-    val mAuth = FirebaseAuth.getInstance()
-    val storage = Firebase.storage.reference
+  val dbGet = Firebase.firestore.collection("users").get()
+  val dbDocument = Firebase.firestore.collection("users")
+  val mAuth = FirebaseAuth.getInstance().currentUser
+  val storage = Firebase.storage.reference
 
-    @Composable
-    fun canvasWithName(label: String) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Canvas(
-                modifier = Modifier.align(alignment = Alignment.TopStart),
-                onDraw = {
-                    val rectangleSize = Size(label.length.dp.toPx() * 10, 140.dp.toPx())
-                    val circleRadius = 70.dp.toPx()
+  @Composable
+  fun canvasWithName(label: String) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+      Canvas(
+        modifier = Modifier.align(alignment = Alignment.TopStart),
+        onDraw = {
+          val rectangleSize = Size(label.length.dp.toPx() * 10, 140.dp.toPx())
+          val circleRadius = 70.dp.toPx()
 
-                    val offsetY = 70.dp.toPx()
+          val offsetY = 70.dp.toPx()
 
-                    drawRoundRect(
-                        color = colorPinkMain,
-                        size = rectangleSize,
-                        cornerRadius = CornerRadius.Zero,
-                        topLeft = Offset(0f, -offsetY)
-                    )
+          drawRoundRect(
+            color = colorPinkMain,
+            size = rectangleSize,
+            cornerRadius = CornerRadius.Zero,
+            topLeft = Offset(0f, -offsetY)
+          )
 
-                    drawCircle(
-                        color = colorPinkMain,
-                        center = Offset(
-                            rectangleSize.width,
-                            rectangleSize.height - circleRadius - offsetY
-                        ),
-                        radius = circleRadius
-                    )
-                }
-            )
-            Text(
-                text = label,
-                fontSize = 20.sp,
-                modifier = Modifier
-                    .padding(start = 11.dp, top = 20.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.TopStart),
-                letterSpacing = 1.sp,
-                textAlign = TextAlign.Start
-            )
+          drawCircle(
+            color = colorPinkMain,
+            center = Offset(
+              rectangleSize.width,
+              rectangleSize.height - circleRadius - offsetY
+            ),
+            radius = circleRadius
+          )
         }
+      )
+      Text(
+        text = label,
+        fontSize = 20.sp,
+        modifier = Modifier
+          .padding(start = 11.dp, top = 20.dp)
+          .fillMaxWidth()
+          .align(Alignment.TopStart),
+        letterSpacing = 1.sp,
+        textAlign = TextAlign.Start
+      )
     }
+  }
 
-    @Composable
-    fun CustomTextFieldEmail(email: String, onValueChangeEmail: (String) -> Unit) {
-        CustomTextField(
-            value = email.lowercase(),
-            onValueChange = onValueChangeEmail,
-            label = {
-                Text(text = stringResource(id = R.string.email), letterSpacing = 1.sp)
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        )
-    }
+  @Composable
+  fun CustomTextFieldEmail(email: String, onValueChangeEmail: (String) -> Unit) {
+    CustomTextField(
+      value = email.lowercase(),
+      onValueChange = onValueChangeEmail,
+      label = {
+        Text(text = stringResource(id = R.string.email), letterSpacing = 1.sp)
+      },
+      keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+    )
+  }
 
-    @Composable
-    fun CanvasBackground(modifier: Modifier) {
-        Spacer(modifier = Modifier.border(1.dp, Color.Black))
-        Canvas(modifier = modifier, onDraw = {
-            drawCircle(
-                color = colorCircle, radius = 450.dp.toPx()
-            )
-        })
-    }
+  @Composable
+  fun CanvasBackground(modifier: Modifier) {
+    Spacer(modifier = Modifier.border(1.dp, Color.Black))
+    Canvas(modifier = modifier, onDraw = {
+      drawCircle(
+        color = colorCircle, radius = 450.dp.toPx()
+      )
+    })
+  }
 
 }

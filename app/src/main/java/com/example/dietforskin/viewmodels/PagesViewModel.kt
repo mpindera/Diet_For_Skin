@@ -75,5 +75,9 @@ class PagesViewModel : ViewModel() {
         _selectedDietitian.value = "DIETITIAN"
     }
 
+    fun clearFieldsOfForgotPassword() {
+        _email.value = ""
+    }
+
 
 }

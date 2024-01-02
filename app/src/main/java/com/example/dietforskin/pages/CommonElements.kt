@@ -33,7 +33,7 @@ class CommonElements {
   val dbGet = Firebase.firestore.collection("users").get()
   val dbDocument = Firebase.firestore.collection("users")
   val mAuth = FirebaseAuth.getInstance().currentUser
-  val storage = Firebase.storage.reference
+  val storage = Firebase.storage.reference.child("pdfs")
   val admin = "Admin"
   val patient = "Patient"
 

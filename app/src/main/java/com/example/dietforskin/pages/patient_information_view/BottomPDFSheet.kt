@@ -90,7 +90,7 @@ fun BottomSheetContent(
 ) {
     var pdfList by remember { mutableStateOf(emptyList<String>()) }
 
-    val storageRef = CommonElements().storage.child("pdfs")
+    val storageRef = CommonElements().storage
     val pathRef = storageRef.child("$uuid/")
 
     DisposableEffect(Unit) {

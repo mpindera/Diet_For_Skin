@@ -1,11 +1,13 @@
 package com.example.dietforskin
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +36,7 @@ import com.example.dietforskin.pages.favorite_view.FavoritePostsView
 import com.example.dietforskin.pages.main_view.MainViewOfPosts
 import com.example.dietforskin.pages.patient_files_view.PatientFiles
 import com.example.dietforskin.pages.patient_information_view.UpdatePatientInformation
+import com.example.dietforskin.pages.pdf_view.PDFView
 import com.example.dietforskin.pages.profile_view.ProfileView
 import com.example.dietforskin.pages.splash_screen.AnimatedSplashScreen
 import com.example.dietforskin.ui.theme.DietForSkinTheme
@@ -59,6 +62,7 @@ class MainActivity : ComponentActivity() {
   private val patientFilesViewModel by viewModels<PatientFilesViewModel>()
 
 
+  @RequiresApi(Build.VERSION_CODES.P)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -167,7 +171,7 @@ class MainActivity : ComponentActivity() {
 
                 UpdatePatientInformation(
                   profileViewModel = profileViewModel,
-                  navController=navController,
+                  navController = navController,
                   context = context,
                   updatePatientInformationViewModel = updatePatientInformationViewModel,
                   uuid = uuid
@@ -177,8 +181,14 @@ class MainActivity : ComponentActivity() {
                 val uuid = navBackStackEntry.arguments?.getString("uuid") ?: ""
 
                 PatientFiles(
-                  patientFilesViewModel = patientFilesViewModel, context = context, uuid = uuid
+                  patientFilesViewModel = patientFilesViewModel,
+                  context = context,
+                  uuid = uuid,
+                  navController = navController
                 )
+              }
+              composable(Screen.PDFView.route) {
+                PDFView()
               }
             }
             BackHandler {

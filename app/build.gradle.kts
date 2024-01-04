@@ -103,6 +103,8 @@ dependencies {
   // FirebaseUI for Cloud Storage
   implementation("com.firebaseui:firebase-ui-storage:8.0.2")
   implementation("io.insert-koin:koin-android:3.2.0")
+  implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+  implementation("com.google.firebase:firebase-appcheck-playintegrity")
 
 
 }

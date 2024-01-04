@@ -103,7 +103,7 @@ fun UpdatePatientInformation(
           paddingBottom = 0.dp,
           id = R.string.add_PDF_File_to_database,
         ) {
-          uploadPdfToFirebase(
+          updatePatientInformationViewModel.uploadPdfToFirebase(
             pdfUri = updatePatientInformationViewModel.pdfUri.value,
             context = context,
             updatePatientInformationViewModel = updatePatientInformationViewModel,
@@ -121,64 +121,6 @@ fun UpdatePatientInformation(
           })
       }
 
-    }
-  }
-}
-
-@Composable
-fun PdfRendererViewer(pdfUri: Uri) {
-  val context = LocalContext.current
-  val bitmap = remember { mutableStateOf<Bitmap?>(null) }
-
-  DisposableEffect(pdfUri) {
-    val parcelFileDescriptor = context.contentResolver.openFileDescriptor(pdfUri, "r")
-    val pdfRenderer = PdfRenderer(parcelFileDescriptor!!)
-    val page = pdfRenderer.openPage(0)
-
-    try {
-      val bitmapResult = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-      page.render(bitmapResult, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-      bitmap.value = bitmapResult
-    } finally {
-      page.close()
-      pdfRenderer.close()
-    }
-
-    onDispose {
-      parcelFileDescriptor.close()
-    }
-  }
-
-  bitmap.value?.let {
-    Image(
-      bitmap = it.asImageBitmap(),
-      contentDescription = "PDF Page",
-      contentScale = ContentScale.Fit,
-      modifier = Modifier.fillMaxSize()
-    )
-  }
-
-  bitmap.value?.asImageBitmap()?.let { Image(bitmap = it, contentDescription = null) }
-}
-
-
-private fun uploadPdfToFirebase(
-  pdfUri: Uri?,
-  context: Context,
-  updatePatientInformationViewModel: UpdatePatientInformationViewModel,
-  uuid: String
-) {
-
-  pdfUri?.let { uri ->
-    val storageRef =
-      Firebase.storage.reference.child("pdfs/$uuid/${updatePatientInformationViewModel.fileName.value}.pdf")
-    val uploadTask = storageRef.putFile(uri)
-
-    uploadTask.addOnSuccessListener {
-      Reports(context).pdfUploadedSuccessfully()
-      updatePatientInformationViewModel.onPDFUriChanged(null)
-    }.addOnFailureListener {
-      Reports(context).pdfUploadFailed()
     }
   }
 }
@@ -216,7 +158,7 @@ fun PreviewPDFFile(
 
         if (showBitmap) {
           if (pdfUri != null) {
-            PdfRendererViewer(pdfUri)
+            updatePatientInformationViewModel.PdfRendererViewer(pdfUri)
           }
         }
       }

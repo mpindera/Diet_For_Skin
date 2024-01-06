@@ -31,5 +31,7 @@
     <string name="dietitian">Dietetyk</string>
     <string name="files">Pliki</string>
     <string name="chat">Czat</string>
+    <string name="downloaded_message">Pobrano %1$s</string>
+    <string name="downloaded_message_error">Błąd podczas pobierania</string>
 
 </resources>

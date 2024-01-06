@@ -33,7 +33,7 @@ fun PDFView() {
 
   DisposableEffect(Unit) {
     try {
-      val fileDescriptor = ParcelFileDescriptor.open(File("/data/user/0/com.example.dietforskin/cache/pdf1101198928498450031pdf"), ParcelFileDescriptor.MODE_READ_ONLY)
+      val fileDescriptor = ParcelFileDescriptor.open(File("/storage/emulated/0/Download/Iluzjonista-MagicznyM.pdf"), ParcelFileDescriptor.MODE_READ_ONLY)
       val pdfRenderer = PdfRenderer(fileDescriptor)
 
       val pageCount = pdfRenderer.pageCount

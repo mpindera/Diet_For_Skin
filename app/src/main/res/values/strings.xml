@@ -30,5 +30,7 @@
     <string name="dietitian">Dietitian</string>
     <string name="files">Files</string>
     <string name="chat">Chat</string>
+    <string name="downloaded_message">Downloaded %1$s</string>
+    <string name="downloaded_message_error">ERROR during download</string>
 
 </resources>

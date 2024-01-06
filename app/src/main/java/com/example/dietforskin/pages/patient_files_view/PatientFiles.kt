@@ -22,6 +22,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,9 +37,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.pages.pdf_view.PDFView
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.viewmodels.PatientFilesViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
+import com.google.firebase.storage.storage
+import kotlinx.coroutines.tasks.await
+import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("SetJavaScriptEnabled")
@@ -47,7 +59,9 @@ fun PatientFiles(
   ) {
   val mapOfPdf = patientFilesViewModel.fetchPDFWithName(uuid)
 
+
   ShowPDFFiles(patientFilesViewModel, mapOfPdf, navController, context)
+
 
 }
 
@@ -58,10 +72,10 @@ fun ShowPDFFiles(
   navController: NavHostController,
   context: Context
 ) {
+  var selectedCard: Pair<String, String>? by remember { mutableStateOf(null) }
 
-  var pathToPDF = ""
-
-  LazyVerticalGrid(modifier = Modifier.fillMaxSize(),
+  LazyVerticalGrid(
+    modifier = Modifier.fillMaxSize(),
     columns = GridCells.Fixed(2),
     contentPadding = PaddingValues(10.dp),
     content = {
@@ -70,35 +84,33 @@ fun ShowPDFFiles(
           colors = CardDefaults.cardColors(colorPinkMain),
           modifier = Modifier
             .width(100.dp)
-            .height(250.dp)
-            .clickable {
-              pathToPDF = patientFilesViewModel.downloadPDF(context, namePDF, linkPDF)
-            }
+            .height(450.dp)
             .padding(4.dp)
             .fillMaxWidth(),
           elevation = CardDefaults.cardElevation(100.dp),
         ) {
-          Column {
-            Text(
-              text = namePDF,
-              fontWeight = FontWeight.Bold,
-              fontSize = 10.sp,
-              color = Color(0xFFFFFFFF),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(16.dp)
-            )
-          }
-          Button(onClick = {
-            Log.d("FirebaseStorage", "$pathToPDF -- TAKI JEST PATH TERAZ")
-          }) {
-            Text(namePDF)
-          }
-
+          Text(
+            text = namePDF,
+            fontWeight = FontWeight.Bold,
+            fontSize = 10.sp,
+            color = Color(0xFFFFFFFF),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(16.dp)
+          )
+        }
+        Button(onClick = {
+          selectedCard = namePDF to linkPDF
+        }) {
+          Text(namePDF)
         }
       }
     })
-
-
+  selectedCard?.let { (selectedName, selectedPath) ->
+    LaunchedEffect(selectedCard) {
+      patientFilesViewModel.downloadPDF(context, selectedName, selectedPath)
+      selectedCard = null
+    }
+  }
 }
 
 

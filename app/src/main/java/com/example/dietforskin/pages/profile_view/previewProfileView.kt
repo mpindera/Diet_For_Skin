@@ -43,6 +43,7 @@ import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.ui.theme.colorTextFieldsAndButton
 import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
+import com.example.dietforskin.viewmodels.PatientFilesViewModel
 import com.example.dietforskin.viewmodels.ProfileViewModel
 import com.example.dietforskin.viewmodels.UpdatePatientInformationViewModel
 
@@ -73,7 +74,8 @@ fun previewProfileView(){
               ProfileViewModel(),
               navController,
               AnimatedSplashScreenViewModel(),
-              UpdatePatientInformationViewModel()
+              UpdatePatientInformationViewModel(),
+              PatientFilesViewModel()
             )
         }, modifier = Modifier.fillMaxSize(), bottomBar = {
             BottomBarView(navController = navController, profileViewModel = ProfileViewModel())

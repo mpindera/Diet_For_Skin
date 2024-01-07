@@ -22,6 +22,7 @@ import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.ui.theme.colorCardIngredient
 import com.example.dietforskin.ui.theme.fontFamilyTitle
 import com.example.dietforskin.viewmodels.AnimatedSplashScreenViewModel
+import com.example.dietforskin.viewmodels.PatientFilesViewModel
 import com.example.dietforskin.viewmodels.ProfileViewModel
 import com.example.dietforskin.viewmodels.UpdatePatientInformationViewModel
 
@@ -31,7 +32,8 @@ fun TopBarView(
   profileViewModel: ProfileViewModel,
   navController: NavHostController,
   animatedSplashScreenViewModel: AnimatedSplashScreenViewModel,
-  updatePatientInformationViewModel: UpdatePatientInformationViewModel
+  updatePatientInformationViewModel: UpdatePatientInformationViewModel,
+  patientFilesViewModel: PatientFilesViewModel
 ) {
 
   TopAppBar(title = {
@@ -45,11 +47,12 @@ fun TopBarView(
 
 
   }, navigationIcon = {
-    if (profileViewModel.selectionOfPagesSite == PagesSite.UPDATE_PROFILE) {
+    if (profileViewModel.selectionOfPagesSite == PagesSite.UPDATE_PROFILE || profileViewModel.selectionOfPagesSite == PagesSite.DOCUMENT_VIEW_PATIENT) {
       IconButton(onClick = {
         navController.popBackStack()
         updatePatientInformationViewModel.onPDFUriChanged(null)
         updatePatientInformationViewModel.onFileNameChanged(null)
+        patientFilesViewModel.onVisibleOfPDFViewChanged(false)
       }) {
         Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
       }

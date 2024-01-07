@@ -41,14 +41,15 @@ class PatientFilesViewModel : ViewModel() {
     val fullPath = File(directory, namePDF).absolutePath
     try {
       pdfStorageRef.getFile(localPdfFile).addOnSuccessListener {
-        Toast.makeText(context, context.getString(R.string.downloaded_message, namePDF), Toast.LENGTH_SHORT).show()
         runBlocking {
           checkPDF(fullPath, namePDF) { (isSuccess, value) ->
             if (isSuccess) {
               downloadPDFToPhone(linkPDF, namePDF, context)
             } else {
               if (isFileExists(value.toString())) {
-
+                onVisibleOfPDFViewChanged(true)
+                onPathPdfChanged(value.toString())
+                onNamePdfChanged(namePDF)
               } else {
                 downloadPDFToPhone(linkPDF, namePDF, context)
               }
@@ -60,8 +61,8 @@ class PatientFilesViewModel : ViewModel() {
           context, context.getString(R.string.downloaded_message, namePDF), Toast.LENGTH_SHORT
         ).show()
       }
-    }catch (e: Exception){
-      Log.d("ERROR",e.toString())
+    } catch (e: Exception) {
+      Log.d("ERROR", e.toString())
     }
   }
 
@@ -106,6 +107,11 @@ class PatientFilesViewModel : ViewModel() {
 
 
   private fun downloadPDFToPhone(linkPDF: String, namePDF: String, context: Context) {
+    Toast.makeText(
+      context,
+      context.getString(R.string.downloaded_message, namePDF),
+      Toast.LENGTH_SHORT
+    ).show()
     val request =
       DownloadManager.Request(Uri.parse(linkPDF)).setTitle(namePDF).setDescription("Downloading")
         .setMimeType("application/pdf").setDestinationInExternalPublicDir(
@@ -150,17 +156,26 @@ class PatientFilesViewModel : ViewModel() {
     return pdfMap
   }
 
-  private val _pathToPDF = MutableStateFlow(".")
-  val pathToPDF: StateFlow<String> = _pathToPDF
+  private val _visibleOfPDFView = MutableStateFlow(false)
+  val visibleOfPDFView: StateFlow<Boolean> = _visibleOfPDFView
 
-  fun onPathToPDFChanged(pathToPDF: String) {
-    _pathToPDF.value = pathToPDF
+  fun onVisibleOfPDFViewChanged(visibleOfPDFView: Boolean) {
+    _visibleOfPDFView.value = visibleOfPDFView
+    Log.d("testa", "_visibleOfPDFView updated: ${_visibleOfPDFView.value}")
   }
 
-  private val _nameToPDF = MutableStateFlow("")
-  val nameToPDF: StateFlow<String> = _nameToPDF
+  private val _pathPdf = MutableStateFlow("")
+  val pathPdf: StateFlow<String> = _pathPdf
 
-  fun onNameToPDFChanged(nameToPDF: String) {
-    _nameToPDF.value = nameToPDF
+  fun onPathPdfChanged(pathPdf: String) {
+    _pathPdf.value = pathPdf
+    Log.d("testa", "path updated: ${_pathPdf.value}")
+
+  }
+  private val _namePdf = MutableStateFlow("")
+  val namePdf: StateFlow<String> = _namePdf
+
+  fun onNamePdfChanged(namePdf: String) {
+    _namePdf.value = namePdf
   }
 }

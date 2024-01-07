@@ -105,7 +105,8 @@ class MainActivity : ComponentActivity() {
                 profileViewModel = profileViewModel,
                 navController = navController,
                 animatedSplashScreenViewModel = animatedSplashScreenViewModel,
-                updatePatientInformationViewModel = updatePatientInformationViewModel
+                updatePatientInformationViewModel = updatePatientInformationViewModel,
+                patientFilesViewModel = patientFilesViewModel
               )
             }
 
@@ -184,11 +185,16 @@ class MainActivity : ComponentActivity() {
                   patientFilesViewModel = patientFilesViewModel,
                   context = context,
                   uuid = uuid,
-                  navController = navController
+                  navController = navController,
+                  profileViewModel = profileViewModel
                 )
               }
               composable(Screen.PDFView.route) {
-                PDFView()
+                PDFView(
+                  patientFilesViewModel.pathPdf.value,
+                  patientFilesViewModel.namePdf.value,
+                  profileViewModel = profileViewModel
+                )
               }
             }
             BackHandler {

@@ -5,8 +5,8 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,15 +37,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.dietforskin.pages.CommonElements
 import com.example.dietforskin.pages.pdf_view.PDFView
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.viewmodels.PatientFilesViewModel
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.storage
-import kotlinx.coroutines.tasks.await
-import java.io.File
+import com.example.dietforskin.viewmodels.ProfileViewModel
 
 @RequiresApi(Build.VERSION_CODES.P)
 @SuppressLint("SetJavaScriptEnabled")
@@ -55,15 +50,25 @@ fun PatientFiles(
   context: Context,
   uuid: String,
   navController: NavHostController,
-
-  ) {
+  profileViewModel: ProfileViewModel
+) {
   val mapOfPdf = patientFilesViewModel.fetchPDFWithName(uuid)
+  val visibleOfPDFView by patientFilesViewModel.visibleOfPDFView.collectAsState()
+  val pathPdf by patientFilesViewModel.pathPdf.collectAsState()
+  val namePdf by patientFilesViewModel.namePdf.collectAsState()
 
+  Log.d("testa", "${patientFilesViewModel.visibleOfPDFView.value} - ${patientFilesViewModel.pathPdf.value}")
 
-  ShowPDFFiles(patientFilesViewModel, mapOfPdf, navController, context)
+  if (visibleOfPDFView) {
+    Log.d("testa", "Chce wejść")
+    PDFView(pathPdf, namePdf, profileViewModel)
+  } else {
+    ShowPDFFiles(patientFilesViewModel, mapOfPdf, navController, context)
+  }
 
 
 }
+
 
 @Composable
 fun ShowPDFFiles(
@@ -73,6 +78,7 @@ fun ShowPDFFiles(
   context: Context
 ) {
   var selectedCard: Pair<String, String>? by remember { mutableStateOf(null) }
+  patientFilesViewModel.onVisibleOfPDFViewChanged(false)
 
   LazyVerticalGrid(
     modifier = Modifier.fillMaxSize(),
@@ -80,28 +86,36 @@ fun ShowPDFFiles(
     contentPadding = PaddingValues(10.dp),
     content = {
       itemsIndexed(mapOfPdf.entries.toList()) { index, (namePDF, linkPDF) ->
-        Card(
-          colors = CardDefaults.cardColors(colorPinkMain),
-          modifier = Modifier
-            .width(100.dp)
-            .height(450.dp)
-            .padding(4.dp)
-            .fillMaxWidth(),
-          elevation = CardDefaults.cardElevation(100.dp),
-        ) {
-          Text(
-            text = namePDF,
-            fontWeight = FontWeight.Bold,
-            fontSize = 10.sp,
-            color = Color(0xFFFFFFFF),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(16.dp)
-          )
-        }
-        Button(onClick = {
-          selectedCard = namePDF to linkPDF
-        }) {
-          Text(namePDF)
+        Box {
+          Card(
+            colors = CardDefaults.cardColors(colorPinkMain),
+            modifier = Modifier
+              .fillMaxWidth()
+              .height(150.dp)
+              .padding(4.dp),
+            elevation = CardDefaults.cardElevation(100.dp),
+          ) {
+            Column(
+              modifier = Modifier
+                .fillMaxSize(),
+              verticalArrangement = Arrangement.Bottom,
+              horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+              Text(
+                text = if (namePDF.length <= 20) namePDF else namePDF.substring(0,15).plus("...pdf"),
+                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp,
+                color = Color(0xFFFFFFFF),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(16.dp)
+              )
+              Button(modifier = Modifier.padding(bottom = 5.dp),onClick = {
+                selectedCard = namePDF to linkPDF
+              }) {
+                Text("Otwórz Plik")
+              }
+            }
+          }
         }
       }
     })

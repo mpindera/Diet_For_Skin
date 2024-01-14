@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.dietforskin.data.profile.PagesSite
 import com.example.dietforskin.pages.pdf_view.PDFView
 import com.example.dietforskin.ui.theme.colorPinkMain
 import com.example.dietforskin.viewmodels.PatientFilesViewModel
@@ -56,8 +57,8 @@ fun PatientFiles(
   val visibleOfPDFView by patientFilesViewModel.visibleOfPDFView.collectAsState()
   val pathPdf by patientFilesViewModel.pathPdf.collectAsState()
   val namePdf by patientFilesViewModel.namePdf.collectAsState()
+  profileViewModel.updateSelectionOfPagesSite(PagesSite.DOCUMENT_VIEW_PATIENT)
 
-  Log.d("testa", "${patientFilesViewModel.visibleOfPDFView.value} - ${patientFilesViewModel.pathPdf.value}")
 
   if (visibleOfPDFView) {
     Log.d("testa", "Chce wejść")

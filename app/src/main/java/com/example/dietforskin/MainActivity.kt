@@ -61,7 +61,6 @@ class MainActivity : ComponentActivity() {
   private val updatePatientInformationViewModel by viewModels<UpdatePatientInformationViewModel>()
   private val patientFilesViewModel by viewModels<PatientFilesViewModel>()
 
-
   @RequiresApi(Build.VERSION_CODES.P)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
